@@ -1,551 +1,321 @@
-<!doctype html>
+```html
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Lei Seca Reader — Cronogramas</title>
-
-  <!-- Favicon / Logo simples SVG data URL -->
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='12' fill='%23222'/%3E%3Ctext x='50' y='55' font-size='42' text-anchor='middle' fill='%23fff' font-family='Arial,Helvetica,sans-serif'%3EL%3C/text%3E%3C/svg%3E">
-
-  <style>
-    :root{
-      --bg:#f6f7f8;
-      --card:#ffffff;
-      --muted:#6b7280;
-      --accent:#0f172a;
-      --accent-2:#0b5cff;
-      --success:#0f9d58;
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;background:linear-gradient(180deg,var(--bg),#fff);color:var(--accent);padding:28px}
-    header{display:flex;gap:16px;align-items:center;margin-bottom:18px}
-    .logo{width:56px;height:56px;border-radius:10px;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:26px;box-shadow:0 6px 18px rgba(12,18,30,0.08)}
-    h1{font-size:18px;margin:0}
-    p.lead{margin:4px 0 0;color:var(--muted);font-size:13px}
-    .layout{display:grid;grid-template-columns:360px 1fr 420px;gap:20px;align-items:start}
-    @media (max-width:1100px){ .layout{grid-template-columns:1fr} .right, .left{order:2} .center{order:1} }
-    .card{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 6px 18px rgba(12,18,30,0.04)}
-    .select-row{display:flex;gap:8px;align-items:center;margin-bottom:12px}
-    select, button, input[type="file"], textarea{padding:8px 10px;border-radius:8px;border:1px solid #e6e9ef;background:#fff;font-size:14px}
-    button.primary{background:var(--accent-2);color:#fff;border:0}
-    .small{font-size:13px;color:var(--muted)}
-    .schedule-list{margin-top:12px;display:flex;flex-direction:column;gap:8px}
-    .schedule-item{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:8px;border:1px solid #f0f2f5}
-    .tag{font-size:12px;padding:6px 8px;border-radius:999px;background:#f3f6ff;color:var(--accent-2)}
-    .calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:12px}
-    .day{min-height:84px;padding:8px;border-radius:8px;background:linear-gradient(180deg,#fff,#fbfdff);border:1px solid #eef2f7;font-size:13px;display:flex;flex-direction:column;gap:6px;cursor:pointer}
-    .day .date{font-weight:600;color:var(--accent);font-size:13px}
-    .day .meta{font-size:12px;color:var(--muted);flex:1}
-    .dot{width:10px;height:10px;border-radius:50%}
-    .dot.read{background:var(--accent-2)}
-    .dot.rev24{background:#f59e0b}
-    .dot.rev7{background:var(--success)}
-    .dot.rev30{background:var(--accent)}
-    .legend{display:flex;gap:10px;align-items:center;margin-top:10px;font-size:13px;color:var(--muted)}
-    .reading-title{font-size:15px;margin:0 0 8px}
-    .reading-meta{font-size:13px;color:var(--muted);margin-bottom:12px}
-    .article{padding:12px;border-radius:8px;background:#fbfdff;border:1px solid #eef6ff;min-height:220px;overflow:auto}
-    .article h3{margin:0 0 8px}
-    .article p{margin:0 0 8px;color:#111827;line-height:1.45}
-    .controls{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
-    .matter-list{display:flex;flex-direction:column;gap:6px;margin-top:10px}
-    .matter{padding:8px;border-radius:8px;border:1px solid #f0f2f5;background:#fff;display:flex;justify-content:space-between;align-items:center}
-    footer{margin-top:18px;color:var(--muted);font-size:13px}
-    .muted{color:var(--muted);font-size:13px}
-    textarea{width:100%;min-height:80px}
-    .import-area{margin-top:10px}
-    .small-note{font-size:12px;color:var(--muted);margin-top:6px}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Cronograma Lei Seca — 40 / 80 dias</title>
+<style>
+  :root{
+    --gap:10px;
+    --sidebar-width:260px;
+    --sidebar-narrow:160px;
+    --accent:#0b63d6;
+    --muted:#666;
+    --bg:#f7f8fb;
+    --card:#fff;
+  }
+  html,body{height:100%;margin:0;background:var(--bg);font-family:Inter,Segoe UI,Arial,sans-serif;color:#111}
+  .app{display:flex;gap:var(--gap);height:100vh;padding:18px;box-sizing:border-box}
+  /* left controls narrow */
+  .left{
+    width:var(--sidebar-narrow);
+    min-width:var(--sidebar-narrow);
+    background:var(--card);
+    border-radius:8px;
+    padding:12px;
+    box-shadow:0 1px 4px rgba(0,0,0,.06);
+    display:flex;flex-direction:column;gap:10px;align-items:stretch;
+    overflow:auto;
+  }
+  .left h2{font-size:14px;margin:0 0 6px 0;color:var(--accent)}
+  label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px}
+  input[type="date"], select, input[type="text"]{width:100%;padding:6px 8px;border:1px solid #ddd;border-radius:6px;font-size:13px;box-sizing:border-box}
+  button{background:var(--accent);color:#fff;border:0;padding:8px 10px;border-radius:6px;cursor:pointer;font-weight:600}
+  button.secondary{background:#e6eefc;color:var(--accent);border:1px solid #d0e2ff}
+  .small{font-size:12px;color:var(--muted)}
+  textarea{width:100%;min-height:120px;padding:8px;border:1px solid #e0e0e0;border-radius:6px;font-size:13px;box-sizing:border-box;resize:vertical}
+  /* main calendar area larger */
+  .main{flex:1;display:flex;flex-direction:column;gap:12px}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .title{font-size:18px;font-weight:700;color:#0b2f5a}
+  .controls{display:flex;gap:8px;align-items:center}
+  .calendar-wrap{background:var(--card);border-radius:8px;padding:14px;box-shadow:0 1px 6px rgba(0,0,0,.06);flex:1;overflow:auto}
+  .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+  .weekday{font-size:12px;color:var(--muted);text-align:center;padding:6px 4px}
+  .day{
+    background:#fff;border-radius:6px;border:1px solid #e6e6e6;padding:8px;min-height:110px;display:flex;flex-direction:column;gap:6px;
+    box-sizing:border-box;font-size:13px;
+  }
+  .day .date{font-weight:700;color:var(--accent);font-size:13px}
+  .day .articles{flex:1;overflow:auto;font-size:13px;color:#222}
+  .day .articles p{margin:0 0 6px 0;padding:0;line-height:1.25}
+  .footer{display:flex;justify-content:flex-end;gap:8px}
+  .muted{color:var(--muted);font-size:13px}
+  .compact{font-size:12px;color:var(--muted)}
+  /* responsive */
+  @media (max-width:900px){
+    .app{flex-direction:column;padding:12px}
+    .left{width:100%;min-width:unset;display:block;order:2}
+    .main{order:1}
+    .calendar-grid .day{min-height:90px}
+  }
+</style>
 </head>
 <body>
-  <header>
-    <div class="logo" aria-hidden>LS</div>
-    <div>
-      <h1>Lei Seca Reader</h1>
-      <p class="lead">Cronogramas 30 / 40 / 80 dias • Revisões 24h / 7d / 30d • Persistência local</p>
+<div class="app">
+  <aside class="left" aria-label="Controles">
+    <h2>Configuração</h2>
+
+    <label class="small">Data de início</label>
+    <input id="startDate" type="date" />
+
+    <label class="small">Ano (selecionável, oculto nas células)</label>
+    <select id="yearSelect"></select>
+
+    <label class="small">Escolha cronograma</label>
+    <select id="mode">
+      <option value="40">40 dias (transcrição)</option>
+      <option value="80">80 dias (adaptação)</option>
+    </select>
+
+    <label class="small">Entrada 40 dias (opcional — formato: DIA;ARTIGOS)</label>
+    <textarea id="input40" placeholder="Exemplo (linha por dia):&#10;1;Lei A - Art. 1-3&#10;2;Lei A - Art. 4-6&#10;..."></textarea>
+
+    <label class="small">Lista de leis e total de artigos (formato: NOME|TOTAL)</label>
+    <textarea id="lawsInput" placeholder="Exemplo (uma lei por linha):&#10;Lei A|120&#10;Lei B|45&#10;Lei C|30"></textarea>
+
+    <div style="display:flex;gap:8px">
+      <button id="generate">Gerar cronograma</button>
+      <button id="clear" class="secondary">Limpar</button>
     </div>
-  </header>
 
-  <main class="layout">
-    <!-- Left: controls -->
-    <aside class="left card">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <div class="small">Escolha do cronograma</div>
-          <div class="select-row">
-            <select id="cronogramaSelect" aria-label="Selecionar cronograma">
-              <option value="30">Intensivo 30 dias</option>
-              <option value="40">Base 40 dias</option>
-              <option value="80" selected>Estudo amplo 80 dias</option>
-            </select>
-            <button id="applyBtn" class="primary">Aplicar</button>
-          </div>
-        </div>
+    <div style="margin-top:8px">
+      <div class="compact">Modo de uso:</div>
+      <div class="compact">• Para 40 dias: cole a transcrição exata em "Entrada 40 dias" ou deixe em branco para distribuir proporcionalmente.</div>
+      <div class="compact">• Para 80 dias: cole leis em "Lista de leis" e o sistema dividirá os artigos sequencialmente em 80 dias.</div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="title">Cronograma de Leitura — Lei Seca</div>
+      <div class="controls">
+        <div class="muted">Visualização: <span id="infoMode">40 dias</span></div>
+      </div>
+    </div>
+
+    <section class="calendar-wrap" aria-label="Calendário">
+      <div id="calendarHeader" style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+        <div class="muted">Início selecionado: <strong id="startInfo">—</strong></div>
+        <div class="muted">Total dias: <strong id="totalDays">—</strong></div>
       </div>
 
-      <div style="margin-top:12px">
-        <div class="small">Navegar por data</div>
-        <input type="date" id="datePicker" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6e9ef;margin-top:8px" />
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <button id="todayBtn">Hoje</button>
-          <button id="prevDay">◀</button>
-          <button id="nextDay">▶</button>
-        </div>
-      </div>
-
-      <div style="margin-top:14px">
-        <div class="small">Resumo do cronograma</div>
-        <div class="schedule-list" id="scheduleSummary"></div>
-      </div>
-
-      <div style="margin-top:14px">
-        <div class="small">Importar / atualizar cronograma</div>
-        <div class="import-area">
-          <div class="small-note">Cole CSV (date,matter,title,url) ou JSON (array) abaixo e clique em Importar.</div>
-          <textarea id="importText" placeholder='Exemplo CSV:&#10;2026-01-26,CF,CF 1 ao 11,https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm'></textarea>
-          <div style="display:flex;gap:8px;margin-top:8px">
-            <button id="importBtn">Importar</button>
-            <button id="resetBtn">Resetar para links iniciais</button>
-          </div>
-        </div>
-      </div>
-
-      <div style="margin-top:14px">
-        <div class="small">Legenda</div>
-        <div class="legend">
-          <span class="dot read"></span><span class="muted">Leitura</span>
-          <span class="dot rev24"></span><span class="muted">Revisão 24h</span>
-          <span class="dot rev7"></span><span class="muted">Revisão 7d</span>
-          <span class="dot rev30"></span><span class="muted">Revisão 30d</span>
-        </div>
-      </div>
-    </aside>
-
-    <!-- Center: calendar grid -->
-    <section class="center card">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <strong id="calendarTitle">Calendário</strong>
-          <div class="small" id="calendarSubtitle">Janela de 35 dias centrada na data selecionada</div>
-        </div>
-        <div class="small">Ano: <span id="yearLabel"></span></div>
-      </div>
-
-      <div style="margin-top:12px;display:flex;gap:6px;font-size:13px;color:var(--muted)">
-        <div style="width:14.28%;text-align:center">Dom</div>
-        <div style="width:14.28%;text-align:center">Seg</div>
-        <div style="width:14.28%;text-align:center">Ter</div>
-        <div style="width:14.28%;text-align:center">Qua</div>
-        <div style="width:14.28%;text-align:center">Qui</div>
-        <div style="width:14.28%;text-align:center">Sex</div>
-        <div style="width:14.28%;text-align:center">Sáb</div>
-      </div>
-
-      <div id="calendarGrid" class="calendar" aria-live="polite"></div>
+      <div id="calendar" class="calendar-grid" role="grid"></div>
     </section>
 
-    <!-- Right: reading and details -->
-    <aside class="right card">
-      <h3 class="reading-title">Leitura do dia</h3>
-      <div class="reading-meta" id="readingMeta">Selecione um dia no calendário ou escolha uma data.</div>
-
-      <div class="article" id="article">
-        <h3 id="articleTitle">Nenhum item selecionado</h3>
-        <div id="articleContent" class="muted">Ao selecionar um dia você verá a matéria programada e poderá tentar carregar o texto da lei diretamente do Planalto.</div>
-      </div>
-
-      <div class="controls">
-        <button id="fetchLaw">Carregar do Planalto</button>
-        <button id="openSource">Abrir no Planalto</button>
-        <button id="markRead">Marcar como lido</button>
-        <button id="exportBtn">Exportar cronograma (JSON)</button>
-      </div>
-
-      <div style="margin-top:12px">
-        <div class="small">Matérias do cronograma</div>
-        <div id="matterList" class="matter-list"></div>
-      </div>
-
-      <footer>
-        <div class="small">Design minimalista • Revisões 24h/7d/30d • Progresso salvo no navegador</div>
-      </footer>
-    </aside>
+    <div class="footer">
+      <div class="muted">Formato das datas: <strong>dd/mm</strong> (ano oculto)</div>
+    </div>
   </main>
+</div>
 
-  <script>
-    /******************************************************************
-     * Cronograma inicial com os links que você enviou
-     * Estrutura: {date, matter, title, url}
-     * Você pode importar CSV/JSON para substituir ou complementar.
-     ******************************************************************/
-    const INITIAL_LINKS = [
-      {matter:'CF', title:'Constituição Federal', url:'https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm'},
-      {matter:'CC', title:'Código Civil (compilada)', url:'https://www.planalto.gov.br/ccivil_03/leis/2002/l10406compilada.htm'},
-      {matter:'CP', title:'Código Penal (compilado)', url:'https://www.planalto.gov.br/ccivil_03/decreto-lei/del2848compilado.htm'},
-      {matter:'CPC', title:'Código de Processo Civil', url:'https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13105.htm'},
-      {matter:'CPP', title:'Código de Processo Penal', url:'https://www.planalto.gov.br/ccivil_03/decreto-lei/del3689compilado.htm'},
-      {matter:'ECA', title:'Estatuto da Criança e do Adolescente (Lei 8.069/1990)', url:'https://www.planalto.gov.br/ccivil_03/leis/l8069.htm'},
-      {matter:'9.099', title:'Lei 9.099/1995', url:'https://www.planalto.gov.br/ccivil_03/leis/l9099.htm'},
-      {matter:'8.072', title:'Lei 8.072/1990 (crimes hediondos)', url:'https://www.planalto.gov.br/ccivil_03/leis/l8072.htm'},
-      {matter:'CDC', title:'Código de Defesa do Consumidor (compilado)', url:'https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm'},
-      {matter:'CTN', title:'Código Tributário Nacional (5.172/1966)', url:'https://www.planalto.gov.br/ccivil_03/leis/l5172compilado.htm'},
-      {matter:'LINDB', title:'LINDB (Decreto-lei 4.657)', url:'https://www.planalto.gov.br/ccivil_03/decreto-lei/del4657compilado.htm'},
-      {matter:'LEP', title:'LEP (Lei 7.210)', url:'https://www.planalto.gov.br/ccivil_03/leis/l7210.htm'},
-      {matter:'L15358', title:'Lei 15.358/2026 (incluir)', url:'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2026/lei/L15358.htm'},
-      {matter:'L15211', title:'ECA digital (Lei 15.211/2025)', url:'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2025/lei/L15211.htm'},
-      {matter:'L11340', title:'Lei Maria da Penha (11.340/2006)', url:'http://www.planalto.gov.br/ccivil_03/_ato2004-2006/2006/lei/l11340.htm'},
-      {matter:'L11343', title:'Lei de Drogas (11.343/2006)', url:'https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2006/lei/l11343.htm'},
-      {matter:'L14133', title:'Lei 14.133/2021 (Licitações)', url:'https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2021/lei/l14133.htm'},
-      {matter:'L3688', title:'Lei de Contravenções Penais (DL 3688)', url:'https://www.planalto.gov.br/ccivil_03/decreto-lei/del3688.htm'}
-    ];
+<script>
+/* Inicialização do seletor de anos */
+(function initYears(){
+  const sel = document.getElementById('yearSelect');
+  const now = new Date();
+  const current = now.getFullYear();
+  for(let y=current-5;y<=current+5;y++){
+    const opt = document.createElement('option');
+    opt.value = y;
+    opt.textContent = y;
+    if(y===current) opt.selected = true;
+    sel.appendChild(opt);
+  }
+})();
 
-    // Helper functions
-    function addDays(d, days){ const x=new Date(d); x.setDate(x.getDate()+days); return x; }
-    function fmt(d){ return d.toISOString().slice(0,10); }
-    function parseDate(s){ return new Date(s + 'T00:00:00'); }
+/* Utilitários */
+function pad(n){return n<10?('0'+n):n}
+function parseInput40(text){
+  // aceita linhas "DIA;ARTIGOS" ou "ARTIGOS" (assume ordem)
+  const lines = text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+  const out = [];
+  for(let i=0;i<lines.length;i++){
+    const parts = lines[i].split(';');
+    if(parts.length===1){
+      out.push({dia:i+1, artigos:parts[0].trim()});
+    } else {
+      out.push({dia: Number(parts[0]) || (i+1), artigos: parts.slice(1).join(';').trim()});
+    }
+  }
+  return out;
+}
+function parseLaws(text){
+  // formato: Nome|Total
+  const lines = text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+  const laws = [];
+  for(const ln of lines){
+    const p = ln.split('|');
+    const name = p[0].trim();
+    const total = Number((p[1]||'').trim());
+    if(!name || !total || total<=0) continue;
+    laws.push({name, total});
+  }
+  return laws;
+}
 
-    // Build schedules programmatically from INITIAL_LINKS by cycling matters
-    function buildScheduleFromLinks(startDate, days, links){
-      const arr = [];
-      let cur = new Date(startDate);
-      for(let i=0;i<days;i++){
-        const link = links[i % links.length];
-        arr.push({
-          dayIndex: i+1,
-          date: fmt(cur),
-          title: `${link.matter} — ${link.title}`,
-          matter: link.matter,
-          sourceUrl: link.url
-        });
-        cur = addDays(cur,1);
+/* Gera sequência de artigos por lei: retorna array de strings "Lei X - Art. N" */
+function expandArticles(laws){
+  const seq = [];
+  for(const law of laws){
+    for(let a=1;a<=law.total;a++){
+      seq.push(`${law.name} — Art. ${a}`);
+    }
+  }
+  return seq;
+}
+
+/* Divide array em N grupos mantendo ordem, tentando balancear */
+function chunkEvenly(arr, groups){
+  const out = Array.from({length:groups},()=>[]);
+  const base = Math.floor(arr.length / groups);
+  let remainder = arr.length % groups;
+  let idx = 0;
+  for(let g=0; g<groups; g++){
+    const take = base + (remainder>0?1:0);
+    remainder = Math.max(0,remainder-1);
+    for(let t=0;t<take;t++){
+      if(idx < arr.length) out[g].push(arr[idx++]);
+    }
+  }
+  return out;
+}
+
+/* Se o usuário forneceu transcrição 40 dias, usa-a; caso contrário, distribui proporcionalmente */
+function build40FromLaws(laws){
+  const seq = expandArticles(laws);
+  const groups = chunkEvenly(seq, 40);
+  return groups.map((g,i)=>({dia:i+1, artigos: g.length? g.join('; ') : ''}));
+}
+
+/* Gera 80 dias a partir das leis (distribuição sequencial) */
+function build80FromLaws(laws){
+  const seq = expandArticles(laws);
+  const groups = chunkEvenly(seq, 80);
+  return groups.map((g,i)=>({dia:i+1, artigos: g.length? g.join('; ') : ''}));
+}
+
+/* Render do calendário: recebe array de {dia,artigos} e data de início */
+function renderCalendarGrid(schedule, startDate, year){
+  const cal = document.getElementById('calendar');
+  cal.innerHTML = '';
+  // cabeçalhos dias da semana
+  const weekdays = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  for(const wd of weekdays){
+    const w = document.createElement('div');
+    w.className = 'weekday';
+    w.textContent = wd;
+    cal.appendChild(w);
+  }
+  // criar células
+  const start = new Date(startDate);
+  start.setFullYear(Number(year));
+  for(let i=0;i<schedule.length;i++){
+    const item = schedule[i];
+    const cell = document.createElement('div');
+    cell.className = 'day';
+    const date = new Date(start);
+    date.setDate(start.getDate() + i);
+    const dd = pad(date.getDate());
+    const mm = pad(date.getMonth()+1);
+    const dateHtml = `<div class="date">${dd}/${mm}</div>`;
+    // artigos: separar por ';' e criar parágrafos curtos
+    const arts = item.artigos ? item.artigos.split(';').map(s=>s.trim()).filter(Boolean) : [];
+    const artHtml = arts.length ? arts.map(a=>`<p>${escapeHtml(a)}</p>`).join('') : '<p class="compact muted">Sem leitura</p>';
+    cell.innerHTML = dateHtml + `<div class="articles">${artHtml}</div>`;
+    cal.appendChild(cell);
+  }
+}
+
+/* Escape simples */
+function escapeHtml(s){ return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;') }
+
+/* Evento gerar */
+document.getElementById('generate').addEventListener('click',()=>{
+  const mode = document.getElementById('mode').value;
+  const startVal = document.getElementById('startDate').value;
+  const year = document.getElementById('yearSelect').value;
+  const input40 = document.getElementById('input40').value.trim();
+  const lawsText = document.getElementById('lawsInput').value.trim();
+
+  if(!startVal){
+    alert('Selecione a data de início.');
+    return;
+  }
+
+  const laws = parseLaws(lawsText);
+  let schedule = [];
+
+  if(mode === '40'){
+    if(input40){
+      // usar transcrição fiel
+      const parsed = parseInput40(input40);
+      // garantir 40 dias: se menos, preencher vazios; se mais, truncar
+      for(let i=0;i<40;i++){
+        const found = parsed.find(p=>Number(p.dia)===i+1);
+        schedule.push({dia:i+1, artigos: found? found.artigos : ''});
       }
-      return arr;
-    }
-
-    // Default start date (you can change)
-    const DEFAULT_START = '2026-01-26';
-
-    // Prebuilt schedules
-    let schedule30 = buildScheduleFromLinks(DEFAULT_START, 30, INITIAL_LINKS);
-    let schedule40 = buildScheduleFromLinks(DEFAULT_START, 40, INITIAL_LINKS);
-    let schedule80 = buildScheduleFromLinks(DEFAULT_START, 80, INITIAL_LINKS);
-
-    // Load saved schedules from localStorage if present
-    function loadSaved(){
-      try{
-        const saved = JSON.parse(localStorage.getItem('leiSecaData') || 'null');
-        if(saved){
-          if(saved.schedule30) schedule30 = saved.schedule30;
-          if(saved.schedule40) schedule40 = saved.schedule40;
-          if(saved.schedule80) schedule80 = saved.schedule80;
-          if(saved.revisions) Object.assign(revisions, saved.revisions);
-          if(saved.readMarks) saved.readMarks.forEach(d=>readMarks.add(d));
-        }
-      }catch(e){ console.warn('loadSaved error',e) }
-    }
-    function saveAll(){
-      const payload = {
-        schedule30, schedule40, schedule80,
-        revisions, readMarks: Array.from(readMarks)
-      };
-      localStorage.setItem('leiSecaData', JSON.stringify(payload));
-    }
-
-    // App state
-    let activeSchedule = schedule80;
-    let activeYear = new Date().getFullYear();
-    let selectedDate = fmt(new Date());
-    const revisions = {}; // date -> [{type, sourceDate}]
-    const readMarks = new Set();
-
-    // DOM refs
-    const calendarGrid = document.getElementById('calendarGrid');
-    const yearLabel = document.getElementById('yearLabel');
-    const scheduleSummary = document.getElementById('scheduleSummary');
-    const matterList = document.getElementById('matterList');
-    const articleTitle = document.getElementById('articleTitle');
-    const articleContent = document.getElementById('articleContent');
-    const readingMeta = document.getElementById('readingMeta');
-    const datePicker = document.getElementById('datePicker');
-
-    // Init saved data
-    loadSaved();
-
-    // UI bindings
-    document.getElementById('cronogramaSelect').addEventListener('change', (e)=>{
-      const val = e.target.value;
-      if(val==='30') activeSchedule = schedule30;
-      if(val==='40') activeSchedule = schedule40;
-      if(val==='80') activeSchedule = schedule80;
-      renderScheduleSummary();
-      renderCalendar(activeYear);
-      renderMatterList();
-    });
-    document.getElementById('applyBtn').addEventListener('click', ()=>{
-      renderScheduleSummary();
-      renderCalendar(activeYear);
-      renderMatterList();
-      saveAll();
-    });
-
-    document.getElementById('todayBtn').addEventListener('click', ()=>{
-      selectedDate = fmt(new Date());
-      datePicker.value = selectedDate;
-      renderCalendar(activeYear);
-      showDay(selectedDate);
-    });
-    document.getElementById('prevDay').addEventListener('click', ()=>{
-      selectedDate = fmt(addDays(new Date(selectedDate), -1));
-      datePicker.value = selectedDate;
-      renderCalendar(activeYear);
-      showDay(selectedDate);
-    });
-    document.getElementById('nextDay').addEventListener('click', ()=>{
-      selectedDate = fmt(addDays(new Date(selectedDate), 1));
-      datePicker.value = selectedDate;
-      renderCalendar(activeYear);
-      showDay(selectedDate);
-    });
-    datePicker.addEventListener('change', (e)=>{
-      selectedDate = e.target.value;
-      renderCalendar(activeYear);
-      showDay(selectedDate);
-    });
-
-    document.getElementById('markRead').addEventListener('click', ()=>{
-      if(!selectedDate) return;
-      readMarks.add(selectedDate);
-      scheduleRevision(selectedDate,1,'24h');
-      scheduleRevision(selectedDate,7,'7d');
-      scheduleRevision(selectedDate,30,'30d');
-      saveAll();
-      renderCalendar(activeYear);
-    });
-
-    document.getElementById('fetchLaw').addEventListener('click', async ()=>{
-      const item = findItemByDate(selectedDate);
-      if(!item){ alert('Nenhuma matéria programada para esta data.'); return; }
-      await loadLawFromPlanalto(item);
-    });
-
-    document.getElementById('openSource').addEventListener('click', ()=>{
-      const item = findItemByDate(selectedDate);
-      if(!item || !item.sourceUrl){ alert('Fonte não disponível para este item.'); return; }
-      window.open(item.sourceUrl,'_blank');
-    });
-
-    document.getElementById('exportBtn').addEventListener('click', ()=>{
-      const data = {schedule30, schedule40, schedule80, revisions, readMarks:Array.from(readMarks)};
-      const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'cronograma_leis.json';
-      a.click();
-      URL.revokeObjectURL(url);
-    });
-
-    document.getElementById('importBtn').addEventListener('click', ()=>{
-      const txt = document.getElementById('importText').value.trim();
-      if(!txt){ alert('Cole CSV ou JSON no campo antes de importar.'); return; }
-      try{
-        if(txt.startsWith('[') || txt.startsWith('{')){
-          // JSON
-          const obj = JSON.parse(txt);
-          applyImported(obj);
-        } else {
-          // CSV parse simple
-          const lines = txt.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
-          const arr = [];
-          for(const ln of lines){
-            const parts = ln.split(',');
-            if(parts.length < 3) continue;
-            const date = parts[0].trim();
-            const matter = parts[1].trim();
-            const title = parts[2].trim();
-            const url = (parts[3]||'').trim();
-            arr.push({date,matter,title,url});
-          }
-          applyImported(arr);
-        }
-      }catch(e){ alert('Erro ao importar: ' + e.message) }
-    });
-
-    document.getElementById('resetBtn').addEventListener('click', ()=>{
-      if(!confirm('Resetar cronogramas para os links iniciais? Isso sobrescreverá alterações locais.')) return;
-      schedule30 = buildScheduleFromLinks(DEFAULT_START, 30, INITIAL_LINKS);
-      schedule40 = buildScheduleFromLinks(DEFAULT_START, 40, INITIAL_LINKS);
-      schedule80 = buildScheduleFromLinks(DEFAULT_START, 80, INITIAL_LINKS);
-      activeSchedule = schedule80;
-      saveAll();
-      renderScheduleSummary();
-      renderCalendar(activeYear);
-      renderMatterList();
-    });
-
-    // apply imported mapping: array of {date,matter,title,url} or object with schedule30/40/80
-    function applyImported(obj){
-      if(Array.isArray(obj)){
-        // map into active schedule by date if dates match, else append as custom entries
-        const map = {};
-        obj.forEach(it=>{ if(it.date) map[it.date]=it; });
-        [schedule30,schedule40,schedule80].forEach((sched,idx)=>{
-          for(let i=0;i<sched.length;i++){
-            const d = sched[i].date;
-            if(map[d]){
-              sched[i].matter = map[d].matter || sched[i].matter;
-              sched[i].title = map[d].title || sched[i].title;
-              sched[i].sourceUrl = map[d].url || sched[i].sourceUrl;
-            }
-          }
-        });
-        alert('Importação aplicada por datas (quando coincidentes).');
-      } else if(typeof obj === 'object'){
-        if(obj.schedule30) schedule30 = obj.schedule30;
-        if(obj.schedule40) schedule40 = obj.schedule40;
-        if(obj.schedule80) schedule80 = obj.schedule80;
-        alert('Importação de cronogramas completa.');
+    } else {
+      if(!laws.length){
+        alert('Para gerar 40 dias sem transcrição, cole a lista de leis com totais.');
+        return;
       }
-      saveAll();
-      renderScheduleSummary();
-      renderCalendar(activeYear);
-      renderMatterList();
+      schedule = build40FromLaws(laws);
     }
-
-    // schedule a revision
-    function scheduleRevision(sourceDate, offsetDays, type){
-      const revDate = fmt(addDays(new Date(sourceDate), offsetDays));
-      if(!revisions[revDate]) revisions[revDate]=[];
-      if(!revisions[revDate].some(r=>r.sourceDate===sourceDate && r.type===type)){
-        revisions[revDate].push({type, sourceDate});
-      }
+  } else { // 80
+    if(!laws.length){
+      alert('Cole a lista de leis com totais para gerar 80 dias.');
+      return;
     }
+    schedule = build80FromLaws(laws);
+  }
 
-    // find schedule item by date
-    function findItemByDate(date){
-      return activeSchedule.find(it=>it.date===date) || null;
-    }
+  // atualizar info
+  document.getElementById('infoMode').textContent = mode + ' dias';
+  document.getElementById('startInfo').textContent = startVal;
+  document.getElementById('totalDays').textContent = schedule.length + ' dias';
 
-    // render schedule summary
-    function renderScheduleSummary(){
-      scheduleSummary.innerHTML='';
-      const total = activeSchedule.length;
-      const first = activeSchedule[0]?.date || '-';
-      const last = activeSchedule[activeSchedule.length-1]?.date || '-';
-      const el = document.createElement('div');
-      el.className='schedule-item';
-      el.innerHTML = `<div><strong>${total} dias</strong><div class="small">De ${first} até ${last}</div></div><div class="tag">Ativo</div>`;
-      scheduleSummary.appendChild(el);
-    }
+  renderCalendarGrid(schedule, startVal, year);
+});
 
-    // render matter list
-    function renderMatterList(){
-      matterList.innerHTML='';
-      const matters = {};
-      activeSchedule.forEach(it=> matters[it.matter] = {key:it.matter, title:it.title, url:it.sourceUrl});
-      Object.values(matters).forEach(m=>{
-        const d = document.createElement('div');
-        d.className='matter';
-        d.innerHTML = `<div><strong>${m.key}</strong><div class="small">${m.title}</div></div><div><a class="small link" href="${m.url || '#'}" target="_blank">Fonte</a></div>`;
-        matterList.appendChild(d);
-      });
-    }
+/* Limpar */
+document.getElementById('clear').addEventListener('click',()=>{
+  document.getElementById('input40').value = '';
+  document.getElementById('lawsInput').value = '';
+  document.getElementById('calendar').innerHTML = '';
+  document.getElementById('startInfo').textContent = '—';
+  document.getElementById('totalDays').textContent = '—';
+  document.getElementById('infoMode').textContent = document.getElementById('mode').value + ' dias';
+});
 
-    // render calendar (35-day window)
-    function renderCalendar(year){
-      yearLabel.textContent = year;
-      calendarGrid.innerHTML = '';
-      const center = new Date(selectedDate || fmt(new Date()));
-      const start = addDays(center, -14);
-      for(let i=0;i<35;i++){
-        const d = addDays(start, i);
-        const ds = fmt(d);
-        const dayEl = document.createElement('div');
-        dayEl.className='day';
-        dayEl.dataset.date = ds;
-        dayEl.innerHTML = `<div class="date">${ds}</div><div class="meta" id="meta-${ds}"></div>`;
-        const item = findItemByDate(ds);
-        const meta = dayEl.querySelector('.meta');
-        if(item){
-          const dot = document.createElement('div'); dot.className='dot read'; dot.title='Leitura programada';
-          meta.appendChild(dot);
-          const t = document.createElement('div'); t.textContent = item.title; t.style.marginTop='6px'; t.style.fontSize='13px';
-          meta.appendChild(t);
-        }
-        if(revisions[ds]){
-          revisions[ds].forEach(r=>{
-            const dot = document.createElement('div'); dot.className='dot ' + (r.type==='24h'?'rev24':(r.type==='7d'?'rev7':'rev30'));
-            dot.title = `Revisão ${r.type} (origem ${r.sourceDate})`;
-            dot.style.marginTop='6px';
-            meta.appendChild(dot);
-          });
-        }
-        if(readMarks.has(ds)){
-          const badge = document.createElement('div'); badge.textContent='✓ lido'; badge.style.fontSize='12px'; badge.style.color='var(--success)'; badge.style.marginTop='6px';
-          meta.appendChild(badge);
-        }
-        if(ds===selectedDate) dayEl.style.boxShadow='0 6px 18px rgba(11,92,255,0.12)';
-        dayEl.addEventListener('click', ()=>{
-          selectedDate = ds;
-          datePicker.value = ds;
-          showDay(ds);
-          renderCalendar(activeYear);
-        });
-        calendarGrid.appendChild(dayEl);
-      }
-      showDay(selectedDate);
-    }
-
-    // show day details
-    function showDay(date){
-      const item = findItemByDate(date);
-      if(item){
-        articleTitle.textContent = item.title;
-        articleContent.innerHTML = `<div class="small">Matéria: <strong>${item.matter}</strong> • Fonte: ${item.sourceUrl ? `<a class="link" href="${item.sourceUrl}" target="_blank">Abrir</a>` : 'não informada'}</div><div style="margin-top:8px" id="articleBody">Clique em "Carregar do Planalto" para tentar obter o texto (pode haver bloqueio CORS).</div>`;
-        readingMeta.textContent = `Data selecionada: ${date} • Dia ${item.dayIndex} do cronograma`;
-      } else {
-        articleTitle.textContent = 'Nenhuma matéria programada';
-        articleContent.innerHTML = '<div class="muted">Este dia não possui leitura programada no cronograma ativo. Você pode importar um cronograma ou navegar para outro dia.</div>';
-        readingMeta.textContent = `Data selecionada: ${date}`;
-      }
-    }
-
-    // Attempt to fetch law text from Planalto. Fallback to link if CORS blocks.
-    async function loadLawFromPlanalto(item){
-      if(!item || !item.sourceUrl){ alert('Fonte não disponível para este item.'); return; }
-      const bodyEl = document.getElementById('articleBody');
-      bodyEl.textContent = 'Tentando carregar...';
-      try{
-        const res = await fetch(item.sourceUrl, {mode:'cors'});
-        if(!res.ok) throw new Error('HTTP ' + res.status);
-        const html = await res.text();
-        // crude extraction: remove scripts and show a cleaned snippet
-        const cleaned = html.replace(/<script[^>]*>[\s\S]*?<\/script>/gi,'').replace(/<\/?[^>]+(>|$)/g,'').slice(0,20000);
-        bodyEl.innerHTML = `<div style="white-space:pre-wrap;font-family:inherit;font-size:13px;color:#111827">${escapeHtml(cleaned)}</div>`;
-      }catch(err){
-        bodyEl.innerHTML = `<div class="muted">Não foi possível carregar automaticamente (CORS ou bloqueio). <a class="link" href="${item.sourceUrl}" target="_blank">Abrir no Planalto</a></div>`;
-      }
-    }
-
-    function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-    // initial render
-    (function init(){
-      // set date picker default
-      datePicker.value = selectedDate;
-      renderScheduleSummary();
-      renderMatterList();
-      renderCalendar(activeYear);
-    })();
-
-    // Expose API for debugging
-    window.LeiSecaReader = {
-      schedules: {30:schedule30,40:schedule40,80:schedule80},
-      setActive: (n)=>{ document.getElementById('cronogramaSelect').value = String(n); document.getElementById('cronogramaSelect').dispatchEvent(new Event('change')); },
-      markRead: (dateStr)=>{ selectedDate = dateStr; readMarks.add(dateStr); scheduleRevision(dateStr,1,'24h'); scheduleRevision(dateStr,7,'7d'); scheduleRevision(dateStr,30,'30d'); saveAll(); renderCalendar(activeYear); }
-    };
-  </script>
+/* Preencher exemplo mínimo para facilitar uso imediato (remova se preferir) */
+(function seedExample(){
+  const sample = `Lei A|120
+Lei B|45
+Lei C|30`;
+  document.getElementById('lawsInput').value = sample;
+  // exemplo de transcrição 40 dias (opcional)
+  const sample40 = [
+    '1;Lei A — Art. 1-3',
+    '2;Lei A — Art. 4-6',
+    '3;Lei A — Art. 7-9',
+    '4;Lei A — Art. 10-12',
+    '5;Lei B — Art. 1-3'
+  ].join('\n');
+  document.getElementById('input40').value = sample40;
+})();
+</script>
 </body>
 </html>
+```
