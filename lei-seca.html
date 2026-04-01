@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lex § Diário — Lei Seca</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231e3a5f'/%3E%3Ctext x='16' y='24' text-anchor='middle' fill='%23c8a96e' font-family='Georgia' font-size='22' font-weight='bold'%3E%C2%A7%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#f8f7f4;--bg2:#f0ede8;--wh:#fff;--navy:#1e3a5f;--navy2:#2a4f7e;
+--gold:#c8a96e;--text:#2c3340;--text2:#5a6473;--text3:#9aa3ae;
+--bdr:#e4dfd8;--bdr2:#edeae5;--grn:#2d7a4f;--grn-bg:#e8f5ee;
+--org:#c47a1a;--org-bg:#fdf3e4;--org-bd:#e8c07a;--blu-bg:#e8eef6;
+--rst:#f0ede8;--rst-t:#b0a89a;--r:8px;
+--fs:'Lora',Georgia,serif;--fn:'DM Sans',system-ui,sans-serif}
+html,body{height:100%;font-family:var(--fn);background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+#hdr{position:sticky;top:0;z-index:200;background:var(--navy);height:56px;display:flex;align-items:center;
+padding:0 0 0 14px;box-shadow:0 1px 6px rgba(0,0,0,.2);gap:0;overflow-x:auto;overflow-y:hidden}
+.logo{display:flex;align-items:center;gap:8px;flex-shrink:0;padding-right:12px;border-right:1px solid rgba(255,255,255,.1)}
+.logo-m{width:30px;height:30px;background:var(--gold);border-radius:5px;display:flex;align-items:center;justify-content:center;
+font-family:var(--fs);font-size:19px;font-weight:600;color:var(--navy)}
+.logo-t strong{display:block;font-family:var(--fs);font-size:13px;font-weight:500;color:#fff}
+.logo-t span{font-size:9px;color:rgba(255,255,255,.35);letter-spacing:.07em;text-transform:uppercase}
+.sbts{display:flex;gap:2px;padding:0 10px;border-right:1px solid rgba(255,255,255,.1);flex-shrink:0}
+.sb{padding:4px 10px;border-radius:14px;border:1px solid rgba(255,255,255,.15);background:transparent;
+color:rgba(255,255,255,.5);cursor:pointer;font-size:11px;font-family:var(--fn);transition:all .15s;white-space:nowrap}
+.sb:hover{background:rgba(255,255,255,.08);color:rgba(255,255,255,.85)}
+.sb.on{background:var(--gold);color:var(--navy);border-color:var(--gold);font-weight:500}
+.hm{flex:1;display:flex;align-items:center;gap:13px;padding:0 10px;min-width:0}
+.pw{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.pt{width:74px;height:3px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden}
+.pf{height:100%;background:var(--gold);border-radius:2px;transition:width .4s}
+#pl{font-size:10px;color:rgba(255,255,255,.4);white-space:nowrap}
+.dr{display:flex;align-items:center;gap:5px;font-size:11px;color:rgba(255,255,255,.4);white-space:nowrap;flex-shrink:0}
+#sd{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;
+padding:2px 6px;border-radius:4px;font-size:11px;font-family:var(--fn)}
+#sd:focus{outline:none;border-color:var(--gold)}
+.yn{display:flex;align-items:center;gap:2px;padding:0 9px;border-right:1px solid rgba(255,255,255,.1);flex-shrink:0}
+.yb{background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:16px;padding:2px 5px;border-radius:3px;transition:all .15s}
+.yb:hover{color:#fff;background:rgba(255,255,255,.08)}
+#yl{font-size:11px;font-weight:500;color:rgba(255,255,255,.6);min-width:28px;text-align:center}
+.nts{display:flex;flex-shrink:0}
+.nt{padding:0 11px;height:56px;border:none;background:transparent;color:rgba(255,255,255,.45);
+cursor:pointer;font-size:12px;font-family:var(--fn);position:relative;transition:color .15s;white-space:nowrap}
+.nt:hover{color:rgba(255,255,255,.8)}.nt.on{color:#fff}
+.nt.on::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--gold)}
+.app{min-height:calc(100vh - 56px)}
+.vw{display:none;padding:20px}.vw.on{display:block}
+.ct{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.ctit{font-family:var(--fs);font-size:19px;font-weight:500;color:var(--navy)}
+.leg{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.li{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text2)}
+.ld{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.cg{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+@media(max-width:1300px){.cg{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:900px){.cg{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:580px){.cg{grid-template-columns:1fr}}
+.mc{background:var(--wh);border:1px solid var(--bdr2);border-radius:var(--r);padding:11px}
+.mn{font-family:var(--fs);font-size:12px;font-weight:500;color:var(--navy);margin-bottom:7px;text-transform:capitalize}
+.mw{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;margin-bottom:2px}
+.wd{text-align:center;font-size:9px;font-weight:500;color:var(--text3)}
+.md{display:grid;grid-template-columns:repeat(7,1fr);gap:1px}
+.cd{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:3px}
+.cd.cl{cursor:pointer;transition:background .12s}.cd.cl:hover{background:var(--bg2)}
+.cd.tod{background:var(--navy)!important}.cd.tod .cn{color:#fff!important;font-weight:600}
+.cd.hs{background:var(--blu-bg)}.cd.dn{background:var(--grn-bg)}.cd.dn .cn{color:var(--grn)!important;font-weight:500}
+.cd.rst{background:var(--rst)!important;cursor:default!important}.cd.rst .cn{color:var(--rst-t)!important;font-size:8px}
+.cd.skp{background:#f5f0ec!important}.cd.skp .cn{color:#c0a898!important}
+.cn{font-size:10px;color:var(--text3);line-height:1}.cd.hs:not(.dn) .cn{color:var(--navy)}
+.dts{display:flex;gap:2px;margin-top:1px}.dt{width:3px;height:3px;border-radius:50%}
+.ds-d{background:var(--navy)}.dn-d{background:var(--grn)}.rv-d{background:var(--org)}
+.cd.tod .ds-d{background:rgba(255,255,255,.7)}.rl{font-size:6px;color:var(--rst-t);margin-top:1px}
+.lw{max-width:720px;margin:0 auto}
+.lt{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.ltit{font-family:var(--fs);font-size:18px;font-weight:500;color:var(--navy)}
+.dl{display:flex;flex-direction:column;gap:4px}
+.di{background:var(--wh);border:1px solid var(--bdr2);border-radius:var(--r);padding:10px 13px;cursor:pointer;
+display:flex;align-items:flex-start;gap:10px;transition:border-color .15s,box-shadow .15s}
+.di:hover{border-color:#c8d8ee;box-shadow:0 1px 8px rgba(30,58,95,.08)}
+.di.dn2{border-left:3px solid var(--grn)}.di.rv2{background:var(--org-bg);border-color:var(--org-bd)}
+.di.tod2{border-color:var(--navy);border-width:2px}.di.skp2{background:#f5f0ec;cursor:default;border-color:transparent;opacity:.8}
+.dn-b{width:34px;height:34px;background:var(--navy);color:#fff;border-radius:6px;
+display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--fs);flex-shrink:0;line-height:1.1}
+.dn-b .bn{font-size:16px;font-weight:600}.dn-b .bl{font-size:7px;opacity:.55;letter-spacing:.03em}
+.di.dn2 .dn-b{background:var(--grn)}.di.skp2 .dn-b{background:var(--rst-t)}
+.di-info{flex:1;min-width:0}.di-dt{font-size:11px;color:var(--text3);margin-bottom:4px}
+.di-tgs{display:flex;flex-wrap:wrap;gap:3px}
+.tg{padding:2px 7px;border-radius:10px;font-size:11px;white-space:nowrap}
+.t-cf{background:#deeaf8;color:#1e3a6a}.t-cc{background:#fdf0e0;color:#7a4a10}
+.t-cp{background:#fce8e8;color:#7a2828}.t-cpc{background:#e8f4fd;color:#145680}
+.t-cpp{background:#ede8f8;color:#4a2870}.t-eca{background:#e0f5ec;color:#1a5a38}
+.t-cdc{background:#e0f0f8;color:#155070}.t-ctn{background:#f0e8f8;color:#4a1870}
+.t-lep{background:#fdf0e8;color:#7a3810}.t-lindb{background:#e8f8f4;color:#156050}
+.t-esp{background:#f4f0e8;color:#5a4820}.t-adm{background:#e8f0f8;color:#284878}
+.t-amb{background:#e4f4e0;color:#1a5018}.t-ele{background:#f0e8f8;color:#481878}
+.t-gen{background:var(--bg2);color:var(--text2)}.di-chk{color:var(--grn);font-size:15px;align-self:center;flex-shrink:0}
+#ov{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.2);opacity:0;transition:opacity .2s}
+#ov.on{display:block;opacity:1}
+#dp{position:fixed;top:56px;right:0;bottom:0;width:460px;max-width:97vw;background:var(--wh);
+border-left:1px solid var(--bdr);z-index:400;transform:translateX(102%);
+transition:transform .24s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;overflow:hidden}
+#dp.on{transform:translateX(0)}
+#dpi{display:flex;flex-direction:column;height:100%;overflow:hidden;min-height:0}
+.ph{padding:14px 15px 12px;border-bottom:1px solid var(--bdr2);display:flex;align-items:flex-start;gap:10px;flex-shrink:0}
+.ph-b{width:40px;height:40px;background:var(--navy);color:#fff;border-radius:7px;
+display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}
+.ph-b .bn{font-size:17px;font-weight:600;line-height:1;font-family:var(--fs)}
+.ph-b .bl{font-size:7px;opacity:.55;letter-spacing:.04em;text-transform:uppercase}
+.ph-i{flex:1;min-width:0}.ph-d{font-size:13px;font-weight:500;color:var(--navy)}
+.ph-s{font-size:11px;color:var(--text3);margin-top:2px}
+.ph-x{background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;padding:4px;line-height:1;flex-shrink:0}
+.ph-x:hover{color:var(--text)}
+.pb{flex:1;overflow-y:auto;overflow-x:hidden;padding:13px 15px 32px;min-height:0}
+.ps{margin-bottom:14px}.ps-t{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:7px}
+.lc{background:var(--bg);border:1px solid var(--bdr2);border-radius:6px;padding:10px 11px;margin-bottom:6px}
+.lc.rv{background:#fff8f0;border-color:var(--org-bd)}
+.lc-h{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:2px}
+.lc-a{font-weight:500;font-size:13px;color:var(--navy);font-family:var(--fs)}
+.lc-r{font-size:11px;color:var(--text2);font-style:italic}
+.rv-badge{display:inline-flex;align-items:center;font-size:9px;font-weight:600;text-transform:uppercase;
+letter-spacing:.05em;color:#fff;background:var(--org);padding:2px 6px;border-radius:8px}
+.lc-n{font-size:11px;color:var(--text2);margin-bottom:8px}
+.lc-bs{display:flex;gap:5px;flex-wrap:wrap}
+.btn-r{padding:5px 11px;background:var(--navy);color:#fff;border:none;border-radius:4px;
+font-size:11px;font-family:var(--fn);cursor:pointer;transition:background .15s}
+.btn-r:hover{background:var(--navy2)}
+.btn-p{padding:5px 11px;background:transparent;color:var(--navy);border:1px solid var(--bdr);
+border-radius:4px;font-size:11px;font-family:var(--fn);cursor:pointer;text-decoration:none;
+display:inline-flex;align-items:center;gap:3px;transition:border-color .15s}
+.btn-p:hover{border-color:var(--navy)}
+.jc{background:#f0f6e8;border:1px solid #c0d898;border-radius:6px;padding:9px 11px;margin-bottom:6px}
+.jchip{display:inline-block;font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;
+color:#355015;background:rgba(53,80,21,.1);padding:2px 5px;border-radius:8px;margin-bottom:4px}
+.rv-sch{background:#fff8f0;border:1px solid var(--org-bd);border-radius:6px;padding:8px 11px;margin-bottom:6px}
+.rv-sch-t{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--org);margin-bottom:3px}
+.rv-sch-d{font-size:12px;color:var(--text);font-weight:500;margin-bottom:3px}
+.rv-sch-l{font-size:11px;color:var(--text2)}
+.btn-dn{width:100%;padding:10px;border-radius:6px;border:1px dashed var(--bdr);background:transparent;
+color:var(--text2);cursor:pointer;font-size:12px;font-family:var(--fn);transition:all .15s;margin-bottom:6px;text-align:center}
+.btn-dn:hover{border-color:var(--grn);background:var(--grn-bg);color:var(--grn);border-style:solid}
+.btn-dn.mk{border-color:var(--grn);background:var(--grn-bg);color:var(--grn);border-style:solid}
+.btn-sk{width:100%;padding:10px;border-radius:6px;border:1px dashed var(--bdr);background:transparent;
+color:var(--text3);cursor:pointer;font-size:12px;font-family:var(--fn);transition:all .15s;text-align:center}
+.btn-sk:hover{border-color:var(--rst-t);background:var(--rst);color:var(--rst-t);border-style:solid}
+.btn-sk.sk{border-color:var(--rst-t);background:var(--rst);color:var(--rst-t);border-style:solid}
+#rp{position:fixed;inset:0;top:56px;background:var(--wh);z-index:500;display:none;flex-direction:column}
+#rp.on{display:flex}
+.rh{padding:12px 18px;border-bottom:1px solid var(--bdr2);display:flex;align-items:center;gap:12px;flex-shrink:0}
+.rb2{background:none;border:none;cursor:pointer;color:var(--text2);font-size:18px;padding:4px 7px;border-radius:4px;transition:all .15s}
+.rb2:hover{background:var(--bg2);color:var(--navy)}.ri{flex:1;min-width:0}
+.rt{font-family:var(--fs);font-size:16px;font-weight:500;color:var(--navy)}
+.rr{font-size:11px;color:var(--text2);margin-top:1px}
+#rl{padding:6px 12px;background:var(--navy);color:#fff;border:none;border-radius:5px;
+font-size:12px;font-family:var(--fn);cursor:pointer;text-decoration:none;white-space:nowrap;transition:background .15s}
+#rl:hover{background:var(--navy2)}.rbd{flex:1;overflow:hidden;position:relative}
+.rbd iframe{width:100%;height:100%;border:none}
+.rld{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+gap:13px;background:var(--bg);font-size:13px;color:var(--text2)}
+.sp{width:26px;height:26px;border:3px solid var(--bdr);border-top-color:var(--navy);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#re{display:none;height:100%;align-items:center;justify-content:center}
+.re-b{max-width:400px;text-align:center;padding:36px 20px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.re-i{font-size:34px;opacity:.3}.re-b h3{font-family:var(--fs);font-size:17px;font-weight:500;color:var(--navy)}
+.re-b p{font-size:12px;color:var(--text2);line-height:1.6}
+.btn-op{padding:9px 18px;background:var(--navy);color:#fff;border:none;border-radius:5px;
+font-size:13px;font-family:var(--fn);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:7px;transition:background .15s}
+.btn-op:hover{background:var(--navy2)}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:3px}</style>
+</head>
+<body>
+<div id="hdr">
+  <div class="logo"><div class="logo-m">§</div><div class="logo-t"><strong>Lex Diário</strong><span>Lei Seca</span></div></div>
+  <div class="sbts">
+    <button class="sb" data-d="30">30 dias</button>
+    <button class="sb on" data-d="40">40 dias</button>
+    <button class="sb" data-d="80">80 dias</button>
+    <button class="sb" data-d="180">180 dias</button>
+    <button class="sb" data-d="mag">Magistratura (93d)</button>
+  </div>
+  <div class="hm">
+    <div class="pw"><div class="pt"><div class="pf" id="pf" style="width:0%"></div></div><span id="pl">0/40</span></div>
+    <div class="dr"><label>Início:</label><input type="date" id="sd"></div>
+  </div>
+  <div class="yn"><button class="yb" id="yp">‹</button><span id="yl">2026</span><button class="yb" id="yn2">›</button></div>
+  <div class="nts">
+    <button class="nt on" data-v="calendar">Calendário</button>
+    <button class="nt" data-v="list">Lista</button>
+  </div>
+</div>
+<div class="app">
+  <div id="view-calendar" class="vw on">
+    <div class="ct">
+      <div class="ctit" id="ctit">Calendário 2026</div>
+      <div class="leg">
+        <div class="li"><div class="ld" style="background:#b8cfe8"></div>Estudo</div>
+        <div class="li"><div class="ld" style="background:var(--grn)"></div>Concluído</div>
+        <div class="li"><div class="ld" style="background:var(--org)"></div>Revisão</div>
+        <div class="li"><div class="ld" style="background:var(--navy)"></div>Hoje</div>
+        <div class="li"><div class="ld" style="background:var(--rst-t)"></div>Descanso</div>
+      </div>
+    </div>
+    <div id="cg" class="cg"></div>
+  </div>
+  <div id="view-list" class="vw">
+    <div class="lw">
+      <div class="lt"><div class="ltit" id="ltit">Cronograma</div><span style="font-size:11px;color:var(--text3)" id="lp"></span></div>
+      <div id="dl" class="dl"></div>
+    </div>
+  </div>
+</div>
+<div id="ov" onclick="closePanel()"></div>
+<div id="dp"><div id="dpi"></div></div>
+<div id="rp">
+  <div class="rh">
+    <button class="rb2" onclick="closeReader()">←</button>
+    <div class="ri"><div class="rt" id="rt">—</div><div class="rr" id="rr"></div></div>
+    <a id="rl" href="#" target="_blank">Abrir no Planalto ↗</a>
+  </div>
+  <div class="rbd">
+    <div class="rld" id="rld"><div class="sp"></div><span>Carregando…</span></div>
+    <iframe id="rif" style="display:none" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+    <div id="re"><div class="re-b"><div class="re-i">§</div><h3>Abrir no Planalto</h3>
+    <p>O servidor oficial não permite exibição embutida. Clique abaixo para ler diretamente.</p>
+    <a id="rel" href="#" target="_blank" class="btn-op">Abrir no Planalto ↗</a></div></div>
+  </div>
+</div>
+<script>
+const L={
+cf:{a:'CF/88',n:'Constituição Federal',url:'https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm',c:'cf'},
+cc:{a:'CC',n:'Código Civil',url:'https://www.planalto.gov.br/ccivil_03/leis/2002/l10406compilada.htm',c:'cc'},
+cp:{a:'CP',n:'Código Penal',url:'https://www.planalto.gov.br/ccivil_03/decreto-lei/del2848compilado.htm',c:'cp'},
+cpc:{a:'CPC',n:'Código de Processo Civil',url:'https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13105.htm',c:'cpc'},
+cpp:{a:'CPP',n:'Código de Processo Penal',url:'https://www.planalto.gov.br/ccivil_03/decreto-lei/del3689compilado.htm',c:'cpp'},
+eca:{a:'ECA',n:'Estatuto da Criança e do Adolescente',url:'https://www.planalto.gov.br/ccivil_03/leis/l8069.htm',c:'eca'},
+ecad:{a:'ECA Digital',n:'ECA Digital (L.15.211/25)',url:'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2025/lei/L15211.htm',c:'eca'},
+cdc:{a:'CDC',n:'Código de Defesa do Consumidor',url:'https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm',c:'cdc'},
+ctn:{a:'CTN',n:'Código Tributário Nacional',url:'https://www.planalto.gov.br/ccivil_03/leis/l5172compilado.htm',c:'ctn'},
+lindb:{a:'LINDB',n:'LINDB',url:'https://www.planalto.gov.br/ccivil_03/decreto-lei/del4657compilado.htm',c:'lindb'},
+lep:{a:'LEP',n:'Lei de Execução Penal',url:'https://www.planalto.gov.br/ccivil_03/leis/l7210.htm',c:'lep'},
+jec:{a:'L.9.099/95',n:'Juizados Especiais',url:'https://www.planalto.gov.br/ccivil_03/leis/l9099.htm',c:'esp'},
+hediond:{a:'L.8.072/90',n:'Lei de Crimes Hediondos',url:'https://www.planalto.gov.br/ccivil_03/leis/l8072.htm',c:'cp'},
+penha:{a:'L.11.340/06',n:'Lei Maria da Penha',url:'http://www.planalto.gov.br/ccivil_03/_ato2004-2006/2006/lei/l11340.htm',c:'esp'},
+drogas:{a:'L.11.343/06',n:'Lei de Drogas',url:'https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2006/lei/l11343.htm',c:'cp'},
+lic:{a:'L.14.133/21',n:'Nova Lei de Licitações',url:'https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2021/lei/l14133.htm',c:'adm'},
+lcp:{a:'LCP',n:'Lei de Contravenções Penais',url:'https://www.planalto.gov.br/ccivil_03/decreto-lei/del3688.htm',c:'cp'},
+lei15358:{a:'L.15.358/26',n:'Lei n. 15.358/2026',url:'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2026/lei/l15358.htm',c:'esp'},
+loc:{a:'L.8.245/91',n:'Lei do Inquilinato',url:'https://www.planalto.gov.br/ccivil_03/leis/l8245.htm',c:'cc'},
+lef:{a:'L.6.830/80',n:'Lei de Execução Fiscal',url:'https://www.planalto.gov.br/ccivil_03/leis/l6830.htm',c:'adm'},
+sinase:{a:'SINASE',n:'Lei do SINASE (12.594/12)',url:'https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2012/lei/l12594.htm',c:'eca'},
+estatuto:{a:'Est.Idoso',n:'Estatuto do Idoso (10.741/03)',url:'https://www.planalto.gov.br/ccivil_03/leis/2003/l10.741.htm',c:'esp'},
+lia:{a:'LIA',n:'Lei de Improbidade Administrativa (8.429/92)',url:'https://www.planalto.gov.br/ccivil_03/leis/l8429.htm',c:'adm'},
+procadm:{a:'L.9.784/99',n:'Lei de Processo Administrativo Federal',url:'https://www.planalto.gov.br/ccivil_03/leis/l9784.htm',c:'adm'},
+camb:{a:'L.9.605/98',n:'Lei de Crimes Ambientais',url:'https://www.planalto.gov.br/ccivil_03/leis/l9605.htm',c:'amb'},
+cflor:{a:'Cód.Florestal',n:'Código Florestal (12.651/12)',url:'https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2012/lei/l12651.htm',c:'amb'},
+pnma:{a:'PNMA',n:'Política Nacional do Meio Ambiente (6.938/81)',url:'https://www.planalto.gov.br/ccivil_03/leis/l6938.htm',c:'amb'},
+snuc:{a:'SNUC',n:'SNUC (9.985/00)',url:'https://www.planalto.gov.br/ccivil_03/leis/l9985.htm',c:'amb'},
+estcid:{a:'Est.Cidades',n:'Estatuto das Cidades (10.257/01)',url:'https://www.planalto.gov.br/ccivil_03/leis/leis_2001/l10257.htm',c:'adm'},
+anticor:{a:'L.12.846/13',n:'Lei Anticorrupção / Resp. Pessoa Jurídica',url:'https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2013/lei/l12846.htm',c:'adm'},
+mediacao:{a:'L.13.140/15',n:'Lei de Mediação',url:'https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13140.htm',c:'adm'},
+acaopop:{a:'L.4.717/65',n:'Lei de Ação Popular',url:'https://www.planalto.gov.br/ccivil_03/leis/l4717.htm',c:'adm'},
+concessao:{a:'L.8.987/95',n:'Lei de Concessões e Permissões',url:'https://www.planalto.gov.br/ccivil_03/leis/l8987cons.htm',c:'adm'},
+procadm:{a:'L.9.784/99',n:'Lei de Processo Administrativo Federal',url:'https://www.planalto.gov.br/ccivil_03/leis/l9784.htm',c:'adm'},
+consorcios:{a:'L.11.107/05',n:'Consórcios Públicos',url:'https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2005/lei/l11107.htm',c:'adm'},
+estatemp:{a:'L.13.303/16',n:'Estatuto das Empresas Públicas',url:'https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2016/lei/l13303.htm',c:'adm'},
+oscip:{a:'OSCIP',n:'Lei OSCIP (9.790/99)',url:'https://www.planalto.gov.br/ccivil_03/leis/l9790.htm',c:'adm'},
+falencia:{a:'L.11.101/05',n:'Lei de Falência e Recuperação',url:'https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2005/lei/l11101.htm',c:'cc'},
+orgcrim:{a:'L.12.850/13',n:'Lei de Organização Criminosa',url:'https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2013/lei/l12850.htm',c:'cp'},
+lavagem:{a:'L.9.613/98',n:'Lei de Lavagem de Dinheiro',url:'https://www.planalto.gov.br/ccivil_03/leis/l9613.htm',c:'cp'},
+ms:{a:'L.12.016/09',n:'Lei do Mandado de Segurança',url:'https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2009/lei/l12016.htm',c:'cf'},
+interc:{a:'L.9.296/96',n:'Lei de Interceptação Telefônica',url:'https://www.planalto.gov.br/ccivil_03/leis/l9296.htm',c:'cpp'},
+prisaotemp:{a:'L.7.960/89',n:'Lei de Prisão Temporária',url:'https://www.planalto.gov.br/ccivil_03/leis/l7960.htm',c:'cpp'},
+acp:{a:'ACP',n:'Lei de Ação Civil Pública (7.347/85)',url:'https://www.planalto.gov.br/ccivil_03/leis/l7347orig.htm',c:'adm'},
+bemfam:{a:'L.8.009/90',n:'Lei do Bem de Família',url:'https://www.planalto.gov.br/ccivil_03/leis/l8009.htm',c:'cc'},
+alfidimov:{a:'L.9.514/97',n:'Alienação Fiduciária Imóveis',url:'https://www.planalto.gov.br/ccivil_03/leis/l9514.htm',c:'cc'},
+alfidmov:{a:'DL.911/69',n:'Alienação Fiduciária Bens Móveis',url:'https://www.planalto.gov.br/ccivil_03/decreto-lei/1965-1988/del0911.htm',c:'cc'},
+mi:{a:'L.13.300/16',n:'Lei do Mandado de Injunção',url:'https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2016/lei/l13300.htm',c:'cf'},
+adpf:{a:'L.9.882/99',n:'Lei da ADPF',url:'https://www.planalto.gov.br/ccivil_03/leis/l9882.htm',c:'cf'},
+protesto:{a:'L.9.492/97',n:'Lei de Protesto',url:'https://www.planalto.gov.br/ccivil_03/leis/l9492.htm',c:'cc'},
+partpol:{a:'L.9.096/95',n:'Lei dos Partidos Políticos',url:'https://www.planalto.gov.br/ccivil_03/leis/l9096.htm',c:'ele'},
+eleicoes:{a:'L.9.504/97',n:'Lei das Eleições',url:'https://www.planalto.gov.br/ccivil_03/leis/l9504.htm',c:'ele'},
+inelegib:{a:'LC.64/90',n:'Lei de Inelegibilidades',url:'https://www.planalto.gov.br/ccivil_03/leis/lcp/lcp64.htm',c:'ele'},
+};
+const TC={cf:'t-cf',cc:'t-cc',cp:'t-cp',cpc:'t-cpc',cpp:'t-cpp',eca:'t-eca',cdc:'t-cdc',
+ctn:'t-ctn',lep:'t-lep',lindb:'t-lindb',esp:'t-esp',adm:'t-adm',amb:'t-amb',ele:'t-ele',gen:'t-gen'};
+const JDW={0:'Súmulas STJ / STF / TSE',1:'Informativos Novos',2:'Súmulas STJ / STF / TSE',
+3:'Repercussão Geral',4:'Recursos Repetitivos — STJ',5:'Jurisprudência em Teses',6:null};
+const SCFG={
+30:{hasSat:false,hasJur:false,label:'30 Dias — Intensivo'},
+40:{hasSat:true, hasJur:false,label:'40 Dias — Base Lei Seca'},
+80:{hasSat:true, hasJur:true, label:'80 Dias — Estudo Ampliado'},
+180:{hasSat:true,hasJur:true, label:'180 Dias — Abrangente (Magistratura)'},
+mag:{hasSat:true,hasJur:true, label:'93 Dias — Magistratura Estadual'},
+};
+
+const S30=[
+[['cf','1\u201311'],['cc','1\u201352'],['cpc','1\u201341'],['cp','1\u201331'],['cpp','1\u201330'],['eca','1\u201335']],
+[['cf','12\u201319'],['cc','53\u2013103'],['cpc','42\u201381'],['cp','32\u201358'],['cpp','31\u201362'],['eca','36\u201377']],
+[['cf','20\u201331'],['cc','104\u2013150'],['cpc','82\u2013112'],['cp','59\u201390'],['cpp','63\u201391'],['eca','78\u2013111']],
+[['cf','32\u201340'],['cc','151\u2013201'],['cpc','113\u2013148'],['cp','91\u2013109'],['cpp','92\u2013118'],['eca','112\u2013144']],
+[['cf','41\u201350'],['cc','202\u2013250'],['cpc','149\u2013175'],['cp','110\u2013136'],['cpp','119\u2013154'],['eca','145\u2013170']],
+[['cf','51\u201358'],['cc','251\u2013303'],['cpc','176\u2013235'],['cp','137\u2013154-B'],['cpp','155\u2013184'],['eca','171\u2013190']],
+[['cf','59\u201369'],['cc','304\u2013351'],['cpc','236\u2013275'],['cp','155\u2013186'],['cpp','185\u2013200'],['eca','191\u2013224'],['lindb','integral']],
+[['cf','70\u201383'],['cc','352\u2013457'],['cpc','276\u2013317'],['cp','186\u2013226'],['cpp','201\u2013230'],['jec','integral'],['lcp','integral']],
+[['cf','84\u201390'],['cc','458\u2013564'],['cpc','318\u2013353'],['cp','227\u2013266'],['cpp','231\u2013258']],
+[['cf','91\u2013100'],['cc','565\u2013652'],['cpc','354\u2013395'],['cp','267\u2013295'],['cpp','259\u2013290'],['cdc','1\u201350']],
+[['cf','101\u2013105'],['cc','653\u2013709'],['cpc','396\u2013441'],['cp','296\u2013327'],['cpp','291\u2013320'],['cdc','51\u201380']],
+[['cf','125\u2013130-A'],['cc','710\u2013802'],['cpc','442\u2013480'],['cp','328\u2013361'],['cpp','321\u2013350'],['cdc','81\u2013119']],
+[['cf','131\u2013141'],['cc','803\u2013903'],['cpc','481\u2013508'],['cpp','351\u2013380'],['hediond','integral'],['penha','integral']],
+[['cf','153\u2013162'],['cc','904\u20131.000'],['cpc','509\u2013538'],['cpp','381\u2013393'],['drogas','integral']],
+[['cf','163\u2013169'],['cc','1.001\u20131.101'],['cpc','539\u2013553'],['ctn','1\u201328'],['cpp','394\u2013431'],['lep','1\u201360']],
+[['cf','170\u2013181'],['cc','1.102\u20131.195'],['cpc','554\u2013598'],['ctn','29\u201370'],['cpp','432\u2013496'],['lep','61\u2013120']],
+[['cf','182\u2013195'],['cc','1.196\u20131.298'],['cpc','599\u2013646'],['ctn','71\u201395'],['cpp','497\u2013530-I'],['lep','121\u2013204']],
+[['cf','196\u2013216'],['cc','1.299\u20131.399'],['cpc','647\u2013706'],['ctn','96\u2013127'],['cpp','531\u2013555']],
+[['cf','217\u2013232'],['cc','1.400\u20131.510'],['cpc','707\u2013743'],['ctn','128\u2013155-A'],['cpp','563\u2013621']],
+[['cf','233\u2013250'],['cc','1.511\u20131.606'],['cpc','744\u2013785'],['ctn','156\u2013193'],['cpp','621\u2013667']],
+[['cc','1.607\u20131.710'],['cpc','786\u2013823'],['ctn','194\u2013218'],['cpp','668\u2013811']],
+[['loc','1\u201326'],['cc','1.711\u20131.797'],['cpc','824\u2013853'],['drogas','1\u201347']],
+[['loc','27\u201358'],['cc','1.798\u20131.896'],['cpc','854\u2013878'],['drogas','48\u201375']],
+[['loc','59\u201390'],['cc','1.897\u20132.046'],['cpc','879\u2013928']],
+[['estatuto','1\u201377'],['cpc','929\u20131.014'],['lef','integral']],
+[['estatuto','78\u2013118'],['cpp','668\u2013811'],['lei15358','integral']],
+[['lindb','integral'],['jec','integral'],['hediond','integral'],['lcp','integral']],
+[['lep','1\u2013100'],['lic','1\u201390']],
+[['lep','101\u2013204'],['lic','91\u2013193']],
+[['penha','integral'],['sinase','integral'],['ecad','integral']],
+];
+const S40=[
+[['cf','1\u20135'],['cc','1\u201339'],['cpc','1\u201341'],['cpp','1\u201323']],
+[['cf','6\u201317'],['cc','40\u201378'],['cpc','42\u201369'],['cpp','24\u201368']],
+[['cf','18\u201333'],['cc','79\u2013114'],['cpc','82\u2013107'],['cpp','69\u201394']],
+[['cf','34\u201341'],['cc','115\u2013137'],['cpc','108\u2013187'],['cpp','95\u2013144']],
+[['cf','42\u201352'],['cc','138\u2013184'],['cpc','188\u2013232'],['cpp','145\u2013184']],
+[['cf','53\u201369'],['cc','185\u2013196'],['cpc','233\u2013293'],['cpp','185\u2013230']],
+[['cf','70\u201383'],['cc','197\u2013232'],['cpc','294\u2013333'],['cpp','231\u2013258']],
+[['cf','84\u201391'],['cc','233\u2013285'],['cpc','334\u2013368'],['cpp','259\u2013281']],
+[['cf','92\u2013103-B'],['cc','286\u2013333'],['cpc','369\u2013484'],['cpp','282\u2013310-A']],
+[['cf','104\u2013117'],['cc','334\u2013420'],['cpc','485\u2013512'],['cpp','311\u2013320']],
+[['cf','118\u2013135'],['cc','421\u2013457'],['cpc','513\u2013538'],['cpp','321\u2013380']],
+[['cf','136\u2013144'],['cc','458\u2013504'],['cpc','539\u2013598'],['cpp','381\u2013405']],
+[['cf','145\u2013155'],['cc','505\u2013537'],['cpc','599\u2013667'],['cpp','406\u2013431']],
+[['cf','156\u2013169'],['cc','538\u2013578'],['cpc','668\u2013692'],['cpp','432\u2013475']],
+[['cf','170\u2013191'],['cc','579\u2013626'],['cpc','693\u2013718'],['cpp','476\u2013518']],
+[['cf','192\u2013204'],['cc','627\u2013692'],['cpc','719\u2013770'],['cpp','519\u2013530-I']],
+[['cf','205\u2013232'],['cc','693\u2013756'],['cpc','771\u2013805'],['cpp','531\u2013562']],
+[['cf','233\u2013250'],['cc','757\u2013817'],['cpc','806\u2013830'],['cpp','563\u2013580'],['cp','1\u20134']],
+[['cc','818\u2013853'],['cpc','831\u2013903'],['cpp','581\u2013606'],['cp','5\u201312']],
+[['cc','854\u2013926'],['cpc','904\u2013959'],['cpp','607\u2013620'],['cp','13\u201325']],
+[['cc','927\u2013965'],['cpc','960\u20131.008'],['cpp','621\u2013646'],['cp','26\u201331']],
+[['cp','32\u201352'],['cc','966\u2013996'],['cpc','1.009\u20131.021'],['cpp','647\u2013811']],
+[['cp','53\u201368'],['cc','997\u20131.038'],['cpc','1.022\u20131.028']],
+[['cp','69\u201376'],['cc','1.039\u20131.087'],['cpc','1.029\u20131.041'],['cdc','1\u20137']],
+[['cp','77\u201390'],['cc','1.088\u20131.122'],['cpc','1.042\u20131.070'],['cdc','8\u201317']],
+[['cp','91\u201395'],['cc','1.123\u20131.178'],['cdc','18\u201328']],
+[['cp','96\u2013106'],['cc','1.179\u20131.224'],['cdc','29\u201354'],['ctn','1\u20138']],
+[['cp','107\u2013112'],['cc','1.225\u20131.358'],['cdc','55\u201380'],['ctn','9\u201318-A \/ 77\u201380']],
+[['cp','113\u2013120'],['cc','1.359\u20131.510-E'],['ctn','81\u201399'],['cdc','81\u2013100']],
+[['cp','121\u2013145'],['cc','1.511\u20131.582'],['ctn','100\u2013112'],['cdc','101\u2013119']],
+[['cp','146\u2013183-A'],['cc','1.583\u20131.710'],['ctn','119\u2013123'],['eca','1\u20136']],
+[['cp','184\u2013249'],['cc','1.711\u20131.783'],['ctn','124\u2013138'],['eca','7\u201318']],
+[['cp','250\u2013311'],['cc','1.784\u20131.856'],['ctn','139\u2013150'],['eca','19\u201338']],
+[['cp','312\u2013361'],['cc','1.857\u20131.946'],['ctn','151\u2013174'],['eca','39\u201369']],
+[['cc','1.991\u20132.046'],['ctn','175\u2013193'],['eca','70\u201394'],['lindb','1\u201310']],
+[['lindb','11\u201330']],
+[['jec','1\u201311']],
+[['ctn','194\u2013204'],['jec','12\u201331'],['eca','95\u2013102'],['loc','22\u201342'],['lef','1\u201328']],
+[['ctn','205\u2013218'],['jec','32\u201359'],['eca','103\u2013140'],['loc','43\u201357'],['lef','29\u201342']],
+[['jec','60\u201397'],['eca','141\u2013199'],['eca','200\u2013267']],
+];
+const S80=[
+[['cf','1\u20135'],['cpp','1\u201312']],[['cf','6\u201312'],['cpp','13\u201323']],
+[['cf','13\u201321'],['cpp','24\u201345']],[['cf','22\u201333'],['cpp','46\u201368']],
+[['cf','34\u201341'],['cpp','69\u201394']],[['cf','42\u201352'],['cpp','95\u2013120']],
+[['cf','53\u201369'],['cpp','121\u2013144']],[['cf','70\u201383'],['cpp','145\u2013170']],
+[['cf','84\u201391'],['cpp','171\u2013184']],[['cf','92\u2013103-B'],['cpp','185\u2013210']],
+[['cf','104\u2013117'],['cpp','211\u2013258']],[['cf','118\u2013135'],['cpp','259\u2013281']],
+[['cf','136\u2013150'],['cc','1\u201320']],[['cf','151\u2013169'],['cc','21\u201339']],
+[['cf','170\u2013180'],['cc','40\u201360']],[['cf','181\u2013191'],['cc','61\u201378']],
+[['cf','192\u2013204'],['cc','79\u2013100']],[['cf','205\u2013232'],['cc','101\u2013137']],
+[['cf','233\u2013250'],['cc','138\u2013160']],[['cc','161\u2013196'],['cpc','1\u201322']],
+[['cc','197\u2013232'],['cpc','23\u201341']],[['cc','233\u2013270'],['cpc','42\u201369']],
+[['cc','271\u2013333'],['cpc','82\u2013107']],[['cc','334\u2013380'],['cpc','108\u2013150']],
+[['cc','381\u2013420'],['cpc','151\u2013187']],[['cc','421\u2013457'],['cpc','188\u2013210']],
+[['cc','458\u2013504'],['cpc','211\u2013232']],[['cc','505\u2013537'],['cpc','233\u2013265']],
+[['cc','538\u2013578'],['cpc','266\u2013293']],[['cc','579\u2013626'],['cpc','294\u2013320']],
+[['cc','627\u2013692'],['cpc','321\u2013368']],[['cc','693\u2013756'],['cpc','369\u2013420']],
+[['cc','757\u2013817'],['cpc','421\u2013484']],[['cc','818\u2013853'],['cpc','485\u2013512']],
+[['cc','854\u2013926'],['cpc','513\u2013538']],[['cc','927\u2013965'],['cpc','539\u2013598']],
+[['cc','966\u2013996'],['cpc','599\u2013640']],[['cc','997\u20131.038'],['cpc','641\u2013692']],
+[['cc','1.039\u20131.087'],['cpc','693\u2013718']],[['cc','1.088\u20131.122'],['cpc','719\u2013770']],
+[['cc','1.123\u20131.178'],['cpc','771\u2013805']],[['cc','1.179\u20131.224'],['cpc','806\u2013830']],
+[['cc','1.225\u20131.280'],['cpc','831\u2013903']],[['cc','1.281\u20131.358'],['cpc','904\u2013959']],
+[['cc','1.359\u20131.430'],['cpc','960\u20131.008']],[['cc','1.431\u20131.510-E'],['cpc','1.009\u20131.028']],
+[['cc','1.511\u20131.582'],['cpc','1.029\u20131.070']],[['cc','1.583\u20131.640'],['cp','1\u201312']],
+[['cc','1.641\u20131.710'],['cp','13\u201325']],[['cc','1.711\u20131.783'],['cp','26\u201352']],
+[['cc','1.784\u20131.856'],['cp','53\u201376']],[['cc','1.857\u20131.946'],['cp','77\u201395']],
+[['cc','1.991\u20132.046'],['cp','96\u2013112']],[['cp','113\u2013145'],['cdc','1\u201317']],
+[['cp','146\u2013183-A'],['cdc','18\u201338']],[['cp','184\u2013220'],['cdc','39\u201360']],
+[['cp','221\u2013249'],['cdc','61\u201380']],[['cp','250\u2013285'],['cdc','81\u2013100']],
+[['cp','286\u2013311'],['cdc','101\u2013119']],[['cp','312\u2013361'],['ctn','1\u201330']],
+[['ctn','31\u201380'],['eca','1\u201318']],[['ctn','81\u2013112'],['eca','19\u201338']],
+[['ctn','113\u2013150'],['eca','39\u201369']],[['ctn','151\u2013175'],['eca','70\u201394']],
+[['ctn','176\u2013193'],['eca','95\u2013130']],[['ctn','194\u2013218'],['eca','131\u2013170']],
+[['lindb','integral'],['eca','171\u2013199']],[['eca','200\u2013267'],['jec','integral']],
+[['lep','1\u201330'],['lef','integral']],[['lep','31\u201370'],['loc','1\u201330']],
+[['lep','71\u2013120'],['loc','31\u201357']],[['lep','121\u2013170'],['loc','58\u201390']],
+[['lep','171\u2013204'],['hediond','integral']],[['penha','integral'],['lcp','integral']],
+[['drogas','1\u201340'],['lei15358','integral']],[['drogas','41\u201375'],['sinase','integral']],
+[['ecad','integral'],['estatuto','1\u201360']],[['estatuto','61\u2013118'],['lia','1\u201317']],
+[['lia','18\u201337'],['procadm','1\u201330']],[['procadm','31\u201370'],['acp','integral']],
+];
+const S180=[
+[['cf','1\u20135'],['lindb','1\u201310']],[['cf','6\u201310'],['lindb','11\u201320']],
+[['cf','11\u201315'],['lindb','21\u201330']],[['cf','16\u201321']],[['cf','22\u201328']],
+[['cf','29\u201335'],['ms','1\u201315']],[['cf','36\u201342'],['ms','16\u201329']],
+[['cf','43\u201350']],[['cf','51\u201358']],[['cf','59\u201365']],[['cf','66\u201375']],[['cf','76\u201383']],
+[['cf','84\u201391']],[['cf','92\u2013100']],[['cf','101\u2013106']],[['cf','107\u2013117']],
+[['cf','118\u2013125']],[['cf','126\u2013135']],[['cf','136\u2013144']],[['cf','145\u2013155']],
+[['cf','156\u2013162']],[['cf','163\u2013169']],[['cf','170\u2013177']],[['cf','178\u2013185']],
+[['cf','186\u2013195']],[['cf','196\u2013204']],[['cf','205\u2013215']],[['cf','216\u2013225']],
+[['cf','226\u2013232'],['cc','1\u201315']],[['cf','233\u2013242'],['cc','16\u201330']],
+[['cf','243\u2013250'],['cc','31\u201350']],[['cc','51\u201370']],[['cc','71\u201390']],
+[['cc','91\u2013115']],[['cc','116\u2013140']],[['cc','141\u2013165']],[['cc','166\u2013196']],
+[['cc','197\u2013215']],[['cc','216\u2013232']],[['cc','233\u2013255']],[['cc','256\u2013280']],
+[['cc','281\u2013310']],[['cc','311\u2013340']],[['cc','341\u2013380']],[['cc','381\u2013420']],
+[['cc','421\u2013455']],[['cc','456\u2013490']],[['cc','491\u2013525']],[['cc','526\u2013560']],
+[['cc','561\u2013595']],[['cc','596\u2013630']],[['cc','631\u2013665']],[['cc','666\u2013700']],
+[['cc','701\u2013740']],[['cc','741\u2013780']],[['cc','781\u2013817']],[['cc','818\u2013850']],
+[['cc','851\u2013890']],[['cc','891\u2013930']],[['cc','931\u2013970']],[['cc','971\u20131.010']],
+[['cc','1.011\u20131.050']],[['cc','1.051\u20131.085']],[['cc','1.086\u20131.120']],
+[['cc','1.121\u20131.155']],[['cc','1.156\u20131.190']],[['cc','1.191\u20131.230']],
+[['cc','1.231\u20131.265']],[['cc','1.266\u20131.300']],[['cc','1.301\u20131.340']],
+[['cc','1.341\u20131.380']],[['cc','1.381\u20131.420']],[['cc','1.421\u20131.460']],
+[['cc','1.461\u20131.510-E']],[['cc','1.511\u20131.540'],['bemfam','integral']],
+[['cc','1.541\u20131.570'],['alfidimov','1\u201320']],[['cc','1.571\u20131.600'],['alfidimov','21\u201338']],
+[['cc','1.601\u20131.635'],['loc','1\u201320']],[['cc','1.636\u20131.670'],['loc','21\u201340']],
+[['cc','1.671\u20131.710'],['loc','41\u201357']],[['cc','1.711\u20131.745'],['loc','58\u201380']],
+[['cc','1.746\u20131.785'],['loc','81\u201390']],[['cc','1.786\u20131.820']],[['cc','1.821\u20131.860']],
+[['cc','1.861\u20131.900']],[['cc','1.901\u20131.946']],[['cc','1.991\u20132.020']],
+[['cc','2.021\u20132.046'],['falencia','1\u201315']],[['falencia','16\u201335'],['cpc','1\u201325']],
+[['falencia','36\u201360'],['cpc','26\u201355']],[['falencia','61\u201385'],['cpc','56\u201390']],
+[['falencia','86\u2013107'],['cpc','91\u2013130']],[['cpc','131\u2013175']],[['cpc','176\u2013210']],
+[['cpc','211\u2013250']],[['cpc','251\u2013290']],[['cpc','291\u2013333']],[['cpc','334\u2013368']],
+[['cpc','369\u2013420']],[['cpc','421\u2013484']],[['cpc','485\u2013512']],[['cpc','513\u2013538']],
+[['cpc','539\u2013580']],[['cpc','581\u2013640']],[['cpc','641\u2013692']],[['cpc','693\u2013740']],
+[['cpc','741\u2013805']],[['cpc','806\u2013850']],[['cpc','851\u2013903']],[['cpc','904\u2013959']],
+[['cpc','960\u20131.008']],[['cpc','1.009\u20131.040'],['jec','1\u201325']],
+[['cpc','1.041\u20131.072'],['jec','26\u201359']],[['jec','60\u201397'],['mediacao','integral']],
+[['lef','1\u201328']],[['lef','29\u201342'],['procadm','1\u201320']],
+[['procadm','21\u201370'],['cp','1\u201320']],[['cp','21\u201345']],[['cp','46\u201370']],
+[['cp','71\u201395']],[['cp','96\u2013120']],[['cp','121\u2013145']],[['cp','146\u2013165']],
+[['cp','166\u2013183-A']],[['cp','184\u2013210']],[['cp','211\u2013240']],[['cp','241\u2013270']],
+[['cp','271\u2013310']],[['cp','311\u2013340']],[['cp','341\u2013361'],['hediond','integral']],
+[['lcp','integral'],['cpp','1\u201330']],[['cpp','31\u201370'],['prisaotemp','integral']],
+[['cpp','71\u2013110'],['interc','integral']],[['cpp','111\u2013150']],[['cpp','151\u2013185']],
+[['cpp','186\u2013220']],[['cpp','221\u2013260']],[['cpp','261\u2013300']],[['cpp','301\u2013340']],
+[['cpp','341\u2013380']],[['cpp','381\u2013420']],[['cpp','421\u2013475']],[['cpp','476\u2013530-I']],
+[['cpp','531\u2013580']],[['cpp','581\u2013630']],[['cpp','631\u2013680']],
+[['cpp','681\u2013730'],['orgcrim','1\u201312']],[['cpp','731\u2013780'],['orgcrim','13\u201324']],
+[['cpp','781\u2013811'],['lavagem','integral']],[['drogas','1\u201320']],[['drogas','21\u201345']],
+[['drogas','46\u201375'],['penha','1\u201320']],[['penha','21\u201346'],['lep','1\u201325']],
+[['lep','26\u201355'],['lei15358','integral']],[['lep','56\u201390']],[['lep','91\u2013130']],
+[['lep','131\u2013170']],[['lep','171\u2013204']],
+[['ctn','1\u201325']],[['ctn','26\u201355']],[['ctn','56\u201385']],[['ctn','86\u2013115']],
+[['ctn','116\u2013145']],[['ctn','146\u2013175']],[['ctn','176\u2013218'],['cdc','1\u201320']],
+[['cdc','21\u201345']],[['cdc','46\u201370']],[['cdc','71\u2013100']],
+[['cdc','101\u2013119'],['ecad','integral']],[['eca','1\u201325']],[['eca','26\u201355']],
+[['eca','56\u201380']],[['eca','81\u2013110']],[['eca','111\u2013140'],['sinase','1\u201325']],
+[['eca','141\u2013170'],['sinase','26\u201345']],[['eca','171\u2013210'],['estatuto','1\u201330']],
+[['eca','211\u2013267'],['estatuto','31\u201360']],[['estatuto','61\u201390'],['lia','1\u201320']],
+[['estatuto','91\u2013118'],['lia','21\u201337']],[['lic','1\u201330'],['acp','integral']],
+[['lic','31\u201360'],['acaopop','integral']],[['lic','61\u201390'],['anticor','integral']],
+[['lic','91\u2013130'],['concessao','integral']],[['lic','131\u2013193'],['consorcios','integral']],
+[['camb','1\u201330'],['pnma','integral']],[['camb','31\u201382'],['cflor','1\u201325']],
+];
+const SMAG=[
+[['cf','1–4'],['cc','1–21'],['cpc','1–12'],['cp','1–12'],['pnma','1–21']],
+[['cf','5'],['cc','22–39'],['cpc','13–25'],['cp','13–25'],['snuc','1–21']],
+[['cf','6–11'],['cc','40–61'],['cpc','26–41'],['cp','26–32'],['pnma','22–41']],
+[['cf','12–16'],['cc','62–84'],['cpc','42–53'],['cp','33–42'],['pnma','42–60']],
+[['cf','17–19'],['cc','85–103'],['cpc','54–63'],['cp','43–48'],['camb','1–30']],
+[['cf','20–24'],['cc','104–120'],['cpc','64–81'],['cp','49–58'],['camb','31–60']],
+[['cf','25–31'],['cc','121–144'],['cpc','82–97'],['cp','59–76'],['camb','61–82']],
+[['cf','32–36'],['cc','145–165'],['cpc','98–112'],['cp','77–82'],['cflor','1–30']],
+[['cf','37–41'],['cc','166–188'],['cpc','113–129'],['cp','83–90'],['cflor','31–60']],
+[['cf','42–47'],['cc','189–211'],['cpc','130–143'],['cp','91–99'],['cflor','61-A–84']],
+[['cf','48–52'],['cc','212–232'],['cpc','144–158'],['cp','100–110'],['estcid','1–31']],
+[['cf','53–58'],['cc','233–256'],['cpc','159–175'],['cp','111–120'],['estcid','32–58']],
+[['cf','59–69'],['cc','257–285'],['cpc','176–192'],['cpp','1–3-F'],['anticor','1–15']],
+[['cf','70–75'],['cc','286–312'],['cpc','193–205'],['cpp','4–13-B'],['anticor','16–30']],
+[['cf','76–83'],['cc','313–333'],['cpc','206–217'],['cpp','14–23'],['mediacao','1–23']],
+[['cf','84–88'],['cc','334–359'],['cpc','218–232'],['cpp','24–34'],['mediacao','24–46']],
+[['cf','89–91'],['cc','360–388'],['cpc','233–237'],['cpp','35–48'],['acaopop','1–12']],
+[['cf','92–100'],['cc','389–416'],['cpc','238–249'],['cpp','49–62'],['acaopop','13–20']],
+[['cf','101–103-B'],['cc','417–438'],['cpc','250–259'],['cpp','63–71'],['hediond','1–13']],
+[['cf','104–110'],['cc','439–461'],['cpc','260–268'],['cpp','72–82'],['lic','1–27']],
+[['cf','111–117'],['cc','462–480'],['cpc','269–275'],['cpp','83–94'],['lic','28–61']],
+[['cf','118–124'],['cc','481–504'],['cpc','276–283'],['cpp','95–111'],['lic','62–88']],
+[['cf','125–130-A'],['cc','505–528'],['cpc','284–290'],['cpp','112–117'],['lic','89–114']],
+[['cf','131–136'],['cc','529–554'],['cpc','291–299'],['cpp','118–124-A'],['lic','115–139']],
+[['cf','137–143'],['cc','555–578'],['cpc','300–310'],['cpp','125–134'],['lic','140–168']],
+[['cf','144–149-A'],['cc','579–609'],['cpc','311–317'],['cpp','135–144-A'],['lic','169–180']],
+[['cf','150–155'],['cc','610–626'],['cpc','318–329'],['cpp','145–154'],['lic','181–194']],
+[['cf','156–162'],['cc','627–646'],['cpc','330–334'],['cpp','155–157'],['concessao','1–22']],
+[['cf','163–164-A'],['cc','647–666'],['cpc','335–346'],['cpp','158–165'],['concessao','23–47']],
+[['cf','165–169'],['cc','667–692'],['cpc','347–357'],['cpp','166–177'],['procadm','1–25']],
+[['cf','170–181'],['cc','693–709'],['cpc','358–368'],['cpp','178–184'],['procadm','26–55']],
+[['cf','182–183'],['cc','710–733'],['cpc','369–380'],['cpp','185–196'],['procadm','56–70']],
+[['cf','184–191'],['cc','734–756'],['cpc','381–395'],['cpp','197–201'],['consorcios','1–20']],
+[['cf','192–195'],['cc','757–777'],['cpc','396–404'],['cpp','202–216'],['lia','1–13']],
+[['cf','196–200'],['cc','778–802'],['cpc','405–419'],['cpp','217–225'],['lia','14–25']],
+[['cf','201–204'],['cc','803–826'],['cpc','420–429'],['cpp','226–230'],['estatemp','1–27']],
+[['cf','205–214'],['cc','827–853'],['cpc','430–438'],['cpp','231–239'],['estatemp','28–62']],
+[['cf','215–219-B'],['cc','854–875'],['cpc','439–449'],['cpp','240–250'],['estatemp','63–96']],
+[['cf','220–225'],['cc','876–903'],['cpc','450–463'],['cpp','251–258'],['oscip','1–20']],
+[['cf','226–230'],['cc','904–920'],['cpc','464–480'],['cpp','259–273'],['falencia','1–20-D']],
+[['cf','231–232'],['cc','921–943'],['cpc','481–488'],['cpp','274–281'],['falencia','21–54']],
+[['cf','233–238'],['cc','944–965'],['cpc','489–501'],['cpp','282–295'],['falencia','55–82-A']],
+[['cf','239–245'],['cc','966–990'],['cpc','502–512'],['cpp','296–300'],['falencia','83–101']],
+[['cf','246–250'],['cc','991–1.009'],['cpc','513–522'],['cpp','301–310'],['falencia','102–128']],
+[['ctn','1–5'],['cc','1.010–1.032'],['cpc','523–533'],['cpp','311–320'],['falencia','129–153']],
+[['ctn','6–8'],['cc','1.033–1.059'],['cpc','534–549'],['cpp','321–336'],['falencia','154–167-Y']],
+[['ctn','9–11'],['cc','1.060–1.080-A'],['cpc','550–566'],['cpp','337–350'],['falencia','168–178']],
+[['ctn','12–18-A'],['cc','1.081–1.101'],['cpc','567–573'],['cpp','351–362'],['falencia','179–200']],
+[['ctn','77–82'],['cc','1.102–1.125'],['cpc','574–587'],['cpp','363–396'],['lef','1–42']],
+[['ctn','96–100'],['cc','1.126–1.149'],['cpc','588–598'],['cpp','370–380'],['lep','1–30']],
+[['ctn','101–106'],['cc','1.150–1.176'],['cpc','599–609'],['cpp','381–393'],['lep','31–60']],
+[['ctn','107–112'],['cc','1.177–1.195'],['cpc','610–625'],['cpp','394–405'],['lep','61–90']],
+[['ctn','113–118'],['cc','1.196–1.224'],['cpc','626–638'],['cpp','406–421'],['lep','91–119']],
+[['ctn','119–125'],['cc','1.225–1.244'],['cpc','639–646'],['cpp','422–431'],['lep','120–150']],
+[['ctn','126–128'],['cc','1.245–1.268'],['cpc','647–658'],['cpp','432–446'],['lep','151–179']],
+[['ctn','129–135'],['cc','1.269–1.287'],['cpc','659–673'],['cpp','447–452'],['lep','180–204']],
+[['ctn','136–141'],['cc','1.288–1.313'],['cpc','674–686'],['cpp','453–465'],['drogas','27–75']],
+[['ctn','142–146'],['cc','1.314–1.330'],['cpc','687–699'],['cpp','466–472'],['lavagem','1–18']],
+[['ctn','147–150'],['cc','1.331–1.356'],['cpc','700–711'],['cpp','473–481'],['orgcrim','1–27']],
+[['ctn','151–156-A'],['cc','1.357–1.360'],['cpc','712–725'],['cpp','482–491'],['eca','1–27']],
+[['ctn','157–164'],['cc','1.361–1.389'],['cpc','726–737'],['cpp','492–502'],['eca','28–59']],
+[['ctn','165–169'],['cc','1.390–1.418'],['cpc','738–743'],['cpp','513–523'],['eca','60–89']],
+[['ctn','170–175'],['cc','1.419–1.446'],['cpc','744–758'],['cpp','524–530-I'],['eca','90–119']],
+[['ctn','176–179'],['cc','1.447–1.472'],['cpc','759–770'],['cpp','531–540'],['eca','120–149']],
+[['ctn','180–185-A'],['cc','1.473–1.498'],['cpc','771–780'],['cpp','541–555'],['eca','150–170']],
+[['ctn','186–193'],['cc','1.499–1.516'],['cpc','781–796'],['cpp','563–573'],['eca','171–197-F']],
+[['ctn','194–200'],['cc','1.517–1.542'],['cpc','797–805'],['cpp','574–580'],['eca','198–207']],
+[['ctn','201–204'],['cc','1.543–1.564'],['cpc','806–821'],['cpp','581–592'],['eca','208–227-A']],
+[['ctn','205–208'],['cc','1.565–1.590'],['cpc','822–830'],['cpp','593–603'],['eca','228–244-B']],
+[['ctn','209–218'],['cc','1.591–1.617'],['cpc','831–844'],['cpp','609–620'],['eca','245–267']],
+[['lindb','1–10'],['cc','1.618–1.634'],['cpc','845–853'],['cpp','621–631'],['protesto','1–24']],
+[['lindb','11–20'],['cc','1.635–1.657'],['cpc','854–865'],['cpp','637–646'],['protesto','25–41-A']],
+[['lindb','21–30'],['cc','1.658–1.686'],['cpc','866–878'],['cpp','647–657'],['interc','1–12']],
+[['penha','1–9'],['cc','1.687–1.710'],['cpc','879–890'],['cpp','658–667'],['estatuto','1–28']],
+[['penha','10–17'],['cc','1.711–1.727'],['cpc','891–903'],['cpp','668–673'],['estatuto','29–58']],
+[['penha','18–24-A'],['cc','1.728–1.752'],['cpc','904–913'],['cpp','674–685'],['estatuto','59–77']],
+[['penha','25–33'],['cc','1.753–1.780'],['cpc','914–925'],['cpp','686–695'],['estatuto','78–94']],
+[['penha','34–45'],['cc','1.781–1.803'],['cpc','926–928'],['cpp','696–709'],['estatuto','95–118']],
+[['bemfam','1–8'],['cc','1.804–1.828'],['cpc','929–946'],['cpp','710–722'],['jec','1–31']],
+[['mi','1–7'],['cc','1.829–1.856'],['cpc','947–959'],['cpp','723–733'],['jec','32–62']],
+[['mi','8–15'],['cc','1.857–1.885'],['cpc','960–975'],['cpp','734–742'],['jec','63–97']],
+[['prisaotemp','1–7'],['cc','1.886–1.911'],['cpc','976–987'],['cpp','743–750'],['alfidmov','1–9']],
+[['ms','1–29'],['cc','1.912–1.938'],['cpc','988–993'],['cpp','751–763'],['alfidimov','1–21']],
+[['adpf','1–14'],['cc','1.939–1.960'],['cpc','994–1.008'],['cpp','764–776'],['alfidimov','22–42']],
+[['acp','1–23'],['cc','1.961–1.990'],['cpc','1.009–1.020'],['cpp','777–786'],['sinase','1–17']],
+[['loc','1–26'],['cc','1.991–2.012'],['cpc','1.021–1.035'],['cpp','787–790'],['sinase','18–34']],
+[['loc','27–58'],['cc','2.013–2.027'],['cpc','1.036–1.044'],['cpp','791–802'],['sinase','35–51']],
+[['loc','59–75'],['cc','2.028–2.046'],['cpc','1.045–1.059'],['cpp','803–811'],['sinase','52–66']],
+[['loc','76–90'],['partpol','1–29'],['cpc','1.060–1.072'],['cdc','1–29'],['sinase','67–80']],
+[['eleicoes','1–27'],['partpol','30–63'],['inelegib','1–28'],['cdc','30–54-G'],['sinase','81–90']],
+[['eleicoes','38–57-J'],['cdc','55–80']],
+[['eleicoes','58–89'],['cdc','30–54-G']],
+[['eleicoes','90–107'],['cdc','81–119']]
+];
+
+// ═══ CORE ═══════════════════════════════════════════════════════════════════
+function getS(){
+  if(cS===30)return S30; if(cS===40)return S40;
+  if(cS===80)return S80; if(cS===180)return S180;
+  return SMAG;
+}
+function getCfg(){return SCFG[cS]||SCFG[40];}
+function dkStr(d){return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate();}
+function dKey(n){return ''+cS+'_'+n;}
+function skKey(n){return 'sk_'+cS+'_'+n;}
+
+let cS=40,cY=new Date().getFullYear(),cV='calendar';
+let startDate=null,done={},skips={};
+
+const MN=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const WD=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const TODAY=new Date();TODAY.setHours(0,0,0,0);
+
+function addDay(d){var r=new Date(d);r.setDate(r.getDate()+1);return r;}
+
+// ── buildSlots ──────────────────────────────────────────────────────────────
+// Returns ordered array of calendar dates (one per study day).
+// Rules:
+//   1. Saturdays are auto-skipped (rest) when cfg.hasSat===true
+//   2. If user skipped study day N, insert ONE extra rest day before placing day N.
+//      This shifts day N and all subsequent days forward by 1 calendar day.
+// The 'consumed' set prevents the same skip from consuming more than 1 rest day.
+function buildSlots(){
+  if(!startDate)return[];
+  var cfg=getCfg(),S=getS(),slots=[],cal=new Date(startDate),consumed={};
+  for(var studyIdx=0,guard=0;studyIdx<S.length&&guard<100000;guard++){
+    // Auto-rest Saturday
+    if(cfg.hasSat&&cal.getDay()===6){cal=addDay(cal);continue;}
+    // User-skip: insert 1 rest day before this study slot
+    if(skips[skKey(studyIdx+1)]&&!consumed[studyIdx]){
+      consumed[studyIdx]=true;
+      cal=addDay(cal);
+      continue; // same studyIdx, next cal day
+    }
+    // Place study day
+    slots.push(new Date(cal));
+    studyIdx++;
+    cal=addDay(cal);
+  }
+  return slots;
+}
+
+function buildDateMap(slots){
+  var map={};
+  (slots||buildSlots()).forEach(function(d,i){map[dkStr(d)]=i+1;});
+  return map;
+}
+
+// ── Review map ──────────────────────────────────────────────────────────────
+// For every study day, compute +1, +7, +30 calendar days from its SCHEDULED date.
+// These become review dates (shown regardless of done status).
+function buildRevMap(slots){
+  var S=getS(),map={};
+  (slots||buildSlots()).forEach(function(dt,i){
+    [[1,'24h'],[7,'7 dias'],[30,'30 dias']].forEach(function(pair){
+      var off=pair[0],type=pair[1];
+      var rd=new Date(dt);rd.setDate(rd.getDate()+off);
+      var dk=dkStr(rd);
+      if(!map[dk])map[dk]=[];
+      map[dk].push({dayNum:i+1,type:type,laws:S[i]});
+    });
+  });
+  return map;
+}
+
+function getJuris(dt){
+  if(!getCfg().hasJur)return null;
+  return JDW[dt.getDay()]||null;
+}
+function fmtDate(dt){return WD[dt.getDay()]+', '+dt.getDate()+' de '+MN[dt.getMonth()].toLowerCase();}
+
+function saveState(){
+  try{localStorage.setItem('ld_v6',JSON.stringify({done:done,skips:skips,start:startDate?startDate.toISOString():null}));}catch(e){}
+}
+function loadState(){
+  try{
+    var raw=localStorage.getItem('ld_v6');
+    if(raw){var s=JSON.parse(raw);done=s.done||{};skips=s.skips||{};startDate=s.start?new Date(s.start):null;}
+  }catch(e){done={};skips={};}
+  var el=document.getElementById('sd');
+  if(startDate){
+    el.value=startDate.getFullYear()+'-'+pad(startDate.getMonth()+1)+'-'+pad(startDate.getDate());
+  }else{
+    var t=new Date();
+    el.value=t.getFullYear()+'-'+pad(t.getMonth()+1)+'-'+pad(t.getDate());
+    applyStart(el.value);
+  }
+}
+function pad(n){return n<10?'0'+n:''+n;}
+function applyStart(v){
+  if(!v)return;
+  var p=v.split('-');startDate=new Date(+p[0],+p[1]-1,+p[2]);
+  saveState();renderAll();
+}
+
+// ═══ RENDER ══════════════════════════════════════════════════════════════════
+function renderAll(){renderProgress();if(cV==='calendar')renderCal();else renderList();}
+
+function renderProgress(){
+  var S=getS(),n=0,i;
+  for(i=0;i<S.length;i++){if(done[dKey(i+1)])n++;}
+  var pct=S.length?Math.round(n/S.length*100):0;
+  document.getElementById('pf').style.width=pct+'%';
+  document.getElementById('pl').textContent=n+'/'+S.length;
+}
+
+// ── Calendar ─────────────────────────────────────────────────────────────────
+function renderCal(){
+  document.getElementById('ctit').textContent='Calendário '+cY;
+  var g=document.getElementById('cg');g.innerHTML='';
+  var slots=buildSlots(),dmap=buildDateMap(slots),rmap=buildRevMap(slots),cfg=getCfg();
+  var WDS=['D','S','T','Q','Q','S','S'];
+  for(var m=0;m<12;m++){
+    var first=new Date(cY,m,1),last=new Date(cY,m+1,0);
+    var card=document.createElement('div');card.className='mc';
+    var wdh=WDS.map(function(w,i){return '<div class="wd" style="'+(i===6?'color:#d4a0a0;font-size:8px':'')+'">'+ w+'</div>';}).join('');
+    card.innerHTML='<div class="mn">'+MN[m]+'</div><div class="mw">'+wdh+'</div><div class="md" id="mg'+m+'"></div>';
+    g.appendChild(card);
+    var dg=card.querySelector('#mg'+m);
+    for(var b=0;b<first.getDay();b++){var bl=document.createElement('div');bl.className='cd';dg.appendChild(bl);}
+    for(var day=1;day<=last.getDate();day++){
+      (function(day){
+        var dt=new Date(cY,m,day),dk=dkStr(dt);
+        var dn=dmap[dk]||0,revs=rmap[dk]||[];
+        var isToday=dt.getTime()===TODAY.getTime();
+        var isSat=cfg.hasSat&&dt.getDay()===6;
+        var isSkip=dn&&skips[skKey(dn)];
+        var isDone=dn&&done[dKey(dn)];
+        var hasS=!!dn&&!isSat&&!isSkip;
+        var el=document.createElement('div');
+        var cls='cd';
+        if(isSat)cls+=' rst';
+        else if(isSkip)cls+=' skp';
+        else if(isToday)cls+=' tod';
+        else if(isDone)cls+=' dn';
+        else if(hasS)cls+=' hs';
+        if(hasS||(!isSat&&revs.length))cls+=' cl';
+        var dots='';
+        if(hasS&&!isDone)dots+='<div class="dt ds-d"></div>';
+        if(isDone)dots+='<div class="dt dn-d"></div>';
+        if(revs.length&&!isSat&&!isSkip)dots+='<div class="dt rv-d"></div>';
+        var inner='<div class="cn">'+day+'</div>';
+        if(dots)inner+='<div class="dts">'+dots+'</div>';
+        if(isSat)inner+='<div class="rl">dsc</div>';
+        if(isSkip)inner+='<div class="rl">skip</div>';
+        el.className=cls;el.innerHTML=inner;
+        if(dn&&!isSat){el.onclick=function(){openPanel(dn);};}
+        else if(revs.length&&!isSat){el.onclick=function(){openPanel(revs[0].dayNum);};}
+        dg.appendChild(el);
+      })(day);
+    }
+  }
+}
+
+// ── List ──────────────────────────────────────────────────────────────────────
+function renderList(){
+  var cfg=getCfg();
+  document.getElementById('ltit').textContent='Cronograma — '+cfg.label;
+  var S=getS(),slots=buildSlots(),n=0,i;
+  for(i=0;i<S.length;i++){if(done[dKey(i+1)])n++;}
+  document.getElementById('lp').textContent=n+'/'+S.length+' concluídos';
+  var container=document.getElementById('dl');container.innerHTML='';
+  var rmap=buildRevMap(slots);
+  var todayRevs=rmap[dkStr(TODAY)]||[];
+  if(todayRevs.length){
+    var h=document.createElement('div');
+    h.innerHTML='<div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--org);margin:4px 0 7px">Revisões de hoje</div>';
+    container.appendChild(h);
+    var seen={};
+    todayRevs.forEach(function(r){if(!seen[r.dayNum]){seen[r.dayNum]=1;container.appendChild(buildItem(r.dayNum,S[r.dayNum-1],true,r.type,slots));}});
+    var sep=document.createElement('div');sep.style.cssText='height:1px;background:var(--bdr2);margin:10px 0';container.appendChild(sep);
+  }
+  for(i=0;i<S.length;i++){container.appendChild(buildItem(i+1,S[i],false,null,slots));}
+}
+
+function lawTags(laws){
+  return(laws||[]).filter(function(e){return L[e[0]];}).map(function(e){
+    var law=L[e[0]];return '<span class="tg '+(TC[law.c]||'t-gen')+'">'+law.a+(e[1]&&e[1]!=='integral'?' '+e[1]:'')+'</span>';
+  }).join('');
+}
+
+function buildItem(n,laws,isRev,revType,slots){
+  var isDone=!!done[dKey(n)],isSkip=!!skips[skKey(n)];
+  var dt=slots?slots[n-1]:buildSlots()[n-1];
+  var isToday=dt&&dt.getTime()===TODAY.getTime();
+  var el=document.createElement('div');
+  var cls='di';
+  if(isDone)cls+=' dn2';if(isRev)cls+=' rv2';
+  if(isToday&&!isRev)cls+=' tod2';if(isSkip)cls+=' skp2';
+  el.className=cls;
+  var dateStr=dt?fmtDate(dt):'';
+  el.innerHTML='<div class="dn-b"><span class="bn">'+n+'</span><span class="bl">dia</span></div>'+
+    '<div class="di-info"><div class="di-dt">'+dateStr+(isSkip?' — descanso':'')+(revType?' — Revisão '+revType:'')+'</div>'+
+    '<div class="di-tgs">'+lawTags(laws)+'</div></div>'+(isDone?'<div class="di-chk">✓</div>':'');
+  el.onclick=function(){if(!isSkip)openPanel(n);};
+  return el;
+}
+
+// ═══ PANEL ═══════════════════════════════════════════════════════════════════
+function makeLcHtml(k,r,rvLabel){
+  var law=L[k];if(!law)return'';
+  var rvBadge=rvLabel?'<span class="rv-badge">'+rvLabel+'</span> ':'';
+  return '<div class="lc'+(rvLabel?' rv':'')+'">'+
+    '<div class="lc-h">'+rvBadge+'<span class="lc-a">'+law.a+'</span>'+
+    '<span class="lc-r">'+(r&&r!=='integral'?'Arts. '+r:'Integral')+'</span></div>'+
+    '<div class="lc-n">'+law.n+'</div>'+
+    '<div class="lc-bs">'+
+      '<button class="btn-r" onclick="openReader(\''+k+'\',\''+r+'\')">Ler texto</button>'+
+      '<a class="btn-p" href="'+law.url+'" target="_blank">Planalto ↗</a>'+
+    '</div></div>';
+}
+
+function openPanel(n){
+  var S=getS();if(!S[n-1])return;
+  var cfg=getCfg(),slots=buildSlots(),rmap=buildRevMap(slots);
+  var dt=slots[n-1];
+  var isDone=!!done[dKey(n)],isSkip=!!skips[skKey(n)];
+
+  // 1. Jurisprudência header
+  var jtext=dt?getJuris(dt):null;
+  var jHtml=jtext?'<div class="ps"><div class="ps-t">Jurisprudência do dia</div>'+
+    '<div class="jc"><span class="jchip">'+jtext+'</span>'+
+    '<div style="font-size:12px;color:var(--text2);margin-top:4px">Consultar informativos, súmulas e teses conforme indicado</div></div></div>':'';
+
+  // 2. Leituras do dia = regular laws + due reviews (merged)
+  var todayDk=dt?dkStr(dt):'_none_';
+  var revsDue=(rmap[todayDk]||[]).filter(function(r){return r.dayNum!==n;});
+
+  var readHtml='';
+  // Regular study laws
+  (S[n-1]||[]).forEach(function(e){if(L[e[0]])readHtml+=makeLcHtml(e[0],e[1],'');});
+  // Review laws due today (integrated in same section)
+  revsDue.forEach(function(rv){
+    (rv.laws||[]).forEach(function(e){
+      if(L[e[0]])readHtml+=makeLcHtml(e[0],e[1],'Revisão '+rv.type+' — Dia '+rv.dayNum);
+    });
+  });
+  var hasRevsDue=revsDue.length>0;
+
+  // 3. Future reviews schedule
+  var futHtml='';
+  if(dt){
+    futHtml='<div class="ps"><div class="ps-t">Agenda de revisões — Dia '+n+'</div>';
+    [[1,'24h'],[7,'7 dias'],[30,'30 dias']].forEach(function(pair){
+      var off=pair[0],type=pair[1];
+      var rd=new Date(dt);rd.setDate(rd.getDate()+off);
+      var lawNames=(S[n-1]||[]).filter(function(e){return L[e[0]];})
+        .map(function(e){return L[e[0]].a+(e[1]&&e[1]!=='integral'?' '+e[1]:'');}).join(' · ');
+      futHtml+='<div class="rv-sch">'+
+        '<div class="rv-sch-t">Revisão '+type+'</div>'+
+        '<div class="rv-sch-d">'+fmtDate(rd)+'</div>'+
+        '<div class="rv-sch-l">'+lawNames+'</div></div>';
+    });
+    futHtml+='</div>';
+  }
+
+  document.getElementById('dpi').innerHTML=
+    '<div class="ph">'+
+      '<div class="ph-b"><span class="bn">'+n+'</span><span class="bl">dia</span></div>'+
+      '<div class="ph-i">'+
+        '<div class="ph-d">Dia '+n+(dt?' — '+fmtDate(dt):'')+'</div>'+
+        '<div class="ph-s">'+cfg.label.split(' — ')[0]+' · '+((S[n-1]||[]).filter(function(e){return L[e[0]];}).length)+' matérias'+(hasRevsDue?' + revisões':'')+(isSkip?' · Descanso':'')+'</div>'+
+      '</div>'+
+      '<button class="ph-x" onclick="closePanel()">×</button>'+
+    '</div>'+
+    '<div class="pb">'+
+      jHtml+
+      '<div class="ps"><div class="ps-t">Leituras do dia'+(hasRevsDue?' + revisões pendentes':'')+'</div>'+readHtml+'</div>'+
+      futHtml+
+      '<button class="btn-dn '+(isDone?'mk':'')+'" onclick="toggleDone('+n+')">'+(isDone?'✓ Concluído — clique para desfazer':'Marcar dia como concluído')+'</button>'+
+      '<button class="btn-sk '+(isSkip?'sk':'')+'" onclick="toggleSkip('+n+')">'+(isSkip?'↩ Desfazer descanso':'Pular dia (descanso)')+'</button>'+
+    '</div>';
+
+  document.getElementById('ov').classList.add('on');
+  document.getElementById('dp').classList.add('on');
+}
+
+function closePanel(){document.getElementById('ov').classList.remove('on');document.getElementById('dp').classList.remove('on');}
+
+function toggleDone(n){
+  var k=dKey(n);
+  if(done[k])delete done[k];else done[k]=new Date().toISOString();
+  saveState();openPanel(n);renderProgress();
+  if(cV==='calendar')renderCal();else renderList();
+}
+function toggleSkip(n){
+  var sk=skKey(n);
+  if(skips[sk])delete skips[sk];else skips[sk]=true;
+  saveState();
+  // Rebuild panel with updated slots, then refresh calendar/list
+  openPanel(n);renderAll();
+}
+
+// ═══ READER ══════════════════════════════════════════════════════════════════
+function openReader(k,r){
+  var law=L[k];if(!law)return;
+  document.getElementById('rt').textContent=law.a+' — '+law.n;
+  document.getElementById('rr').textContent=r&&r!=='integral'?'Arts. '+r:'Texto integral';
+  document.getElementById('rl').href=law.url;document.getElementById('rel').href=law.url;
+  var rld=document.getElementById('rld'),rif=document.getElementById('rif'),re=document.getElementById('re');
+  rld.style.display='flex';rif.style.display='none';re.style.display='none';
+  document.getElementById('rp').classList.add('on');
+  rif.src=law.url;
+  rif.onload=function(){try{var _=rif.contentDocument;rld.style.display='none';rif.style.display='block';}catch(e){showRE();}};
+  rif.onerror=showRE;
+  setTimeout(function(){if(rld.style.display!=='none')showRE();},7000);
+}
+function showRE(){document.getElementById('rld').style.display='none';document.getElementById('rif').style.display='none';document.getElementById('re').style.display='flex';}
+function closeReader(){document.getElementById('rp').classList.remove('on');document.getElementById('rif').src='about:blank';}
+
+// ═══ EVENTS ══════════════════════════════════════════════════════════════════
+document.querySelectorAll('.sb').forEach(function(btn){
+  btn.onclick=function(){
+    cS=isNaN(+btn.dataset.d)?btn.dataset.d:+btn.dataset.d;
+    document.querySelectorAll('.sb').forEach(function(b){b.classList.remove('on');});btn.classList.add('on');
+    renderAll();
+  };
+});
+document.querySelectorAll('.nt').forEach(function(btn){
+  btn.onclick=function(){
+    cV=btn.dataset.v;
+    document.querySelectorAll('.nt').forEach(function(b){b.classList.remove('on');});btn.classList.add('on');
+    document.querySelectorAll('.vw').forEach(function(v){v.classList.remove('on');});
+    document.getElementById('view-'+cV).classList.add('on');renderAll();
+  };
+});
+document.getElementById('sd').onchange=function(e){applyStart(e.target.value);};
+document.getElementById('yp').onclick=function(){cY--;document.getElementById('yl').textContent=cY;if(cV==='calendar')renderCal();};
+document.getElementById('yn2').onclick=function(){cY++;document.getElementById('yl').textContent=cY;if(cV==='calendar')renderCal();};
+document.getElementById('yl').textContent=cY;
+loadState();renderAll();
+
+</script>
+</body>
+</html>
